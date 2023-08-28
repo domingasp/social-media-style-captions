@@ -1,5 +1,5 @@
 import { Box, Button, Stack, Text, Textarea, Title } from "@mantine/core";
-import { toPng } from "html-to-image";
+import { toPng, toSvg } from "html-to-image";
 import { useEffect, useState } from "react";
 
 function CaptionCreator() {
@@ -17,15 +17,44 @@ function CaptionCreator() {
     return metrics.width;
   };
 
-  const getBorderRadius = function getBorderRadius(
-    line: string,
-    lineToCompare: string | undefined,
-    radius: string
+  const getOuterRadius = function getOuterRadius(
+    radiusPos:
+      | "full-left"
+      | "full-right"
+      | "top-left"
+      | "top-right"
+      | "bottom-left"
+      | "bottom-right" = "full-left",
+    position: "left" | "right" = "left"
   ) {
-    if (!lineToCompare || getTextWidth(line) > getTextWidth(lineToCompare)) {
-      return radius;
-    }
-    return "unset";
+    let topLeft, topRight, bottomLeft, bottomRight;
+    topLeft = topRight = bottomLeft = bottomRight = "0px";
+
+    if (radiusPos === "full-left") topLeft = bottomLeft = "10px";
+    if (radiusPos === "full-right") topRight = bottomRight = "10px";
+    if (radiusPos === "top-left") topLeft = "10px";
+    if (radiusPos === "top-right") topRight = "10px";
+    if (radiusPos === "bottom-left") bottomLeft = "10px";
+    if (radiusPos === "bottom-right") bottomRight = "10px";
+
+    return (
+      <Box
+        sx={{
+          backgroundColor: "transparent",
+          position: "absolute",
+          width: "20px",
+          top: "-0px",
+          height: "100%",
+          outline: "solid 10px red",
+          clipPath: position.includes("left")
+            ? "polygon(50% 0%, 101% 0%, 101% 100%, 50% 100%)"
+            : "polygon(-1% 0%, 50% 0%, 50% 100%, -1% 100%)",
+          left: position.includes("left") ? "-20px" : "unset",
+          right: position.includes("right") ? "-20px" : "unset",
+          borderRadius: `${topLeft} ${topRight} ${bottomRight} ${bottomLeft}`,
+        }}
+      />
+    );
   };
 
   return (
@@ -48,7 +77,7 @@ function CaptionCreator() {
         onClick={() => {
           var node = document.getElementById("output");
 
-          toPng(node!)
+          toSvg(node!)
             .then(function (dataUrl) {
               var img = new Image();
               img.src = dataUrl;
@@ -62,28 +91,17 @@ function CaptionCreator() {
         lol
       </Button>
 
-      <Stack align="center" spacing={0} id="output">
+      <Stack align="center" spacing={0} id="output" p="10px 30px">
         {lines.map((line, i) => (
           <Box
             key={i}
             sx={{
-              borderRadius: "4px",
-              borderBottomLeftRadius: getBorderRadius(
-                line,
-                lines[i + 1],
-                "4px"
-              ),
-              borderBottomRightRadius: getBorderRadius(
-                line,
-                lines[i + 1],
-                "4px"
-              ),
-              borderTopLeftRadius: getBorderRadius(line, lines[i - 1], "4px"),
-              borderTopRightRadius: getBorderRadius(line, lines[i - 1], "4px"),
               backgroundColor: "red",
-              padding: "10px",
+              padding: "10px 12px 10px 12px",
+              position: "relative",
             }}
           >
+            {getOuterRadius("full-left", "right")}
             <Text>{line}</Text>
           </Box>
         ))}
