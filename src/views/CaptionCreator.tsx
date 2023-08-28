@@ -97,8 +97,11 @@ function CaptionCreator() {
             key={i}
             sx={{
               backgroundColor: "red",
-              padding: "10px 12px 10px 12px",
+              padding: `10px 12px ${
+                i === lines.length - 1 ? "10px" : "0px"
+              } 12px`,
               position: "relative",
+              marginTop: "-1px",
             }}
           >
             {getOuterRadius("full-left", "right")}
