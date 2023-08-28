@@ -3,7 +3,7 @@ import { toPng, toSvg } from "html-to-image";
 import { useEffect, useState } from "react";
 
 function CaptionCreator() {
-  const radius = "7px";
+  const radius = "9px";
 
   const [content, setContent] = useState("Text\nTesting");
   const [lines, setLines] = useState<string[]>([]);
@@ -111,7 +111,7 @@ function CaptionCreator() {
             key={i}
             sx={{
               backgroundColor: "red",
-              padding: "0.9rem 0.85rem 1rem 0.85rem",
+              padding: "1rem 1.1rem 0.75rem 1.1rem",
               position: "relative",
               marginTop: "-1px",
               borderTopLeftRadius: radius,
@@ -126,7 +126,7 @@ function CaptionCreator() {
               className="tiktok-classic-text"
               size="2rem"
               sx={{
-                lineHeight: "1.2rem",
+                lineHeight: "1.75rem",
               }}
             >
               {line}
