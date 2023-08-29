@@ -25,20 +25,17 @@ function CaptionCreator() {
   const radius = "9px";
 
   const [content, setContent] = useState("Text\nTesting");
-  const [lines, setLines] = useState<string[]>([]);
   const [batchedLines, setBatchedLines] = useState<string[][]>([]);
 
   useEffect(() => {
     const contentSplit = content.split("\n");
-    setLines(contentSplit);
 
     const batched: string[][] = [[contentSplit[0]]];
     let batch = 0;
     for (let i = 0; i < contentSplit.length - 1; i += 1) {
-      const curr = contentSplit[i];
       const next = contentSplit[i + 1];
 
-      if (!isSimilarLength(curr, next)) {
+      if (batched[batch].some((x) => !isSimilarLength(next, x))) {
         batch += 1;
         if (batched.length === batch) batched.push([]);
       }
@@ -59,12 +56,12 @@ function CaptionCreator() {
     let clipPath = "polygon(50% 0%, 101% 0%, 101% 100%, 50% 100%)";
 
     if (radiusPos === "full-left") {
-      topLeft = bottomLeft = "10px";
-      clipPath = "polygon(50% 0%, 101% 0%, 101% 100%, 50% 100%)";
+      topLeft = bottomLeft = radius;
+      clipPath = "polygon(-1% 0%, 50% 0%, 50% 100%, -1% 100%)";
     }
     if (radiusPos === "full-right") {
       topRight = bottomRight = radius;
-      clipPath = "polygon(-1% 0%, 50% 0%, 50% 100%, -1% 100%)";
+      clipPath = "polygon(50% 0%, 101% 0%, 101% 100%, 50% 100%)";
     }
     if (radiusPos === "top-left") {
       topLeft = radius;
@@ -98,6 +95,17 @@ function CaptionCreator() {
           borderRadius: `${topLeft} ${topRight} ${bottomRight} ${bottomLeft}`,
         }}
       />
+    );
+  };
+
+  const getFullOuterRadius = function getFullOuterRadius(
+    position: "top" | "bottom" | "full"
+  ) {
+    return (
+      <>
+        {getOuterRadius(`${position}-right`, "left")}
+        {getOuterRadius(`${position}-left`, "right")}
+      </>
     );
   };
 
@@ -140,7 +148,6 @@ function CaptionCreator() {
           const isOnlyBatch = batchedLines.length === 1;
           const isFirstBatch = i === 0;
           const isLastBatch = i === batchedLines.length - 1;
-          const isSandwichedBatch = !isFirstBatch && !isLastBatch;
 
           return (
             <Box key={i}>
@@ -148,7 +155,6 @@ function CaptionCreator() {
                 const isOnly = batch.length === 1;
                 const isFirst = j === 0;
                 const isLast = j === batch.length - 1;
-                const isSandwiched = !isFirst && !isLast;
 
                 let topLeftRadius,
                   topRightRadius,
@@ -160,45 +166,73 @@ function CaptionCreator() {
                   bottomRightRadius =
                     "0px";
 
+                let outerCurves = <></>;
+
                 if (isOnlyBatch) {
                   if (isFirst) topLeftRadius = topRightRadius = radius;
                   if (isLast) bottomLeftRadius = bottomRightRadius = radius;
                 } else if (isFirstBatch) {
                   if (isFirst) topLeftRadius = topRightRadius = radius;
                   if (isLast) {
-                    bottomLeftRadius = bottomRightRadius = isShorter(
-                      line,
-                      batchedLines[i + 1][0]
-                    )
+                    const shorter = isShorter(line, batchedLines[i + 1][0]);
+                    bottomLeftRadius = bottomRightRadius = shorter
                       ? "0px"
                       : radius;
+
+                    if (shorter) outerCurves = getFullOuterRadius("bottom");
                   }
                 } else if (isLastBatch) {
                   if (isLast) bottomLeftRadius = bottomRightRadius = radius;
-                  if (isFirst && !isOnly) {
-                    topLeftRadius = topRightRadius = isShorter(
+                  if (isFirst) {
+                    const shorter = isShorter(
                       line,
                       batchedLines[i - 1].at(-1)!
-                    )
-                      ? "0px"
-                      : radius;
+                    );
+                    topLeftRadius = topRightRadius = shorter ? "0px" : radius;
+
+                    if (shorter) outerCurves = getFullOuterRadius("top");
                   }
                 } else {
-                  if (isFirst) {
-                    topLeftRadius = topRightRadius = isShorter(
+                  if (isOnly) {
+                    const shorterThanAbove = isShorter(
                       line,
                       batchedLines[i - 1].at(-1)!
-                    )
-                      ? "0px"
-                      : radius;
-                  }
-                  if (isLast) {
-                    bottomLeftRadius = bottomRightRadius = isShorter(
+                    );
+                    const shorterThanBelow = isShorter(
                       line,
                       batchedLines[i + 1][0]
-                    )
+                    );
+
+                    if (!shorterThanAbove && !shorterThanBelow) {
+                      topLeftRadius =
+                        topRightRadius =
+                        bottomLeftRadius =
+                        bottomRightRadius =
+                          radius;
+                    } else if (shorterThanAbove && !shorterThanBelow) {
+                      bottomLeftRadius = bottomRightRadius = radius;
+                      outerCurves = getFullOuterRadius("top");
+                    } else if (!shorterThanAbove && shorterThanBelow) {
+                      topLeftRadius = topRightRadius = radius;
+                      outerCurves = getFullOuterRadius("bottom");
+                    } else if (shorterThanAbove && shorterThanBelow) {
+                      outerCurves = getFullOuterRadius("full");
+                    }
+                  } else if (isFirst) {
+                    const shorter = isShorter(
+                      line,
+                      batchedLines[i - 1].at(-1)!
+                    );
+                    topLeftRadius = topRightRadius = shorter ? "0px" : radius;
+
+                    if (shorter) outerCurves = getFullOuterRadius("top");
+                  } else if (isLast) {
+                    const shorter = isShorter(line, batchedLines[i + 1][0]);
+                    bottomLeftRadius = bottomRightRadius = shorter
                       ? "0px"
                       : radius;
+
+                    if (shorter) outerCurves = getFullOuterRadius("bottom");
                   }
                 }
 
@@ -218,8 +252,7 @@ function CaptionCreator() {
                       textAlign: "center",
                     }}
                   >
-                    {/* {getOuterRadius(`top-left`, "right")}
-                    {getOuterRadius(`bottom-right`, "left")} */}
+                    {outerCurves}
                     <Text
                       className="tiktok-classic-text"
                       size="2rem"
