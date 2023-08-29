@@ -28,25 +28,8 @@ const getTextWidth = function getTextWidth(
   return 0;
 };
 
-const differenceInWidth = function differenceInWidth(
-  containerDiv: HTMLDivElement,
-  textDiv: HTMLDivElement,
-  text: string,
-  toCompare: string
-) {
-  return Math.abs(
-    getTextWidth(containerDiv, textDiv, text) -
-      getTextWidth(containerDiv, textDiv, toCompare)
-  );
-};
-
-const isSimilarLength = function isSimilarLength(
-  containerDiv: HTMLDivElement,
-  textDiv: HTMLDivElement,
-  text: string,
-  toCompare: string
-) {
-  return differenceInWidth(containerDiv, textDiv, text, toCompare) < 24;
+const differenceInWidth = function differenceInWidth(a: number, b: number) {
+  return Math.abs(a - b);
 };
 
 function CaptionCreator() {
@@ -75,12 +58,18 @@ function CaptionCreator() {
       }
     }
 
+    const acceptableSize = 36;
     const batched: { label: string; width: number }[][] = [[]];
     let batch = 0;
     for (let i = 0; i < textWithWidths.length; i += 1) {
       const curr = textWithWidths[i];
 
-      if (i === 0) batched[batch].push(curr);
+      if (curr.label.length === 0) {
+        batch += 1;
+        batched.push([{ label: "", width: 0 }]);
+        batch += 1;
+        batched.push([]);
+      } else if (i === 0) batched[batch].push(curr);
       else {
         const longestInCurrBatch = Math.max(
           ...batched[batch].map((x) => x.width)
@@ -90,7 +79,8 @@ function CaptionCreator() {
         let longestInFuture = 0;
         while (
           j < textWithWidths.length &&
-          Math.abs(curr.width - textWithWidths[j].width) < 28
+          differenceInWidth(curr.width, textWithWidths[j].width) <
+            acceptableSize
         ) {
           if (longestInFuture < textWithWidths[j].width) {
             longestInFuture = textWithWidths[j].width;
@@ -99,16 +89,21 @@ function CaptionCreator() {
           j += 1;
         }
 
-        if (Math.abs(longestInFuture - longestInCurrBatch) < 28) {
+        if (batched[batch].length === 0) {
+          batched[batch].push(curr);
+        } else if (
+          differenceInWidth(longestInFuture, longestInCurrBatch) <
+          acceptableSize
+        ) {
           batched[batch].push(curr);
         } else if (
           i === textWithWidths.length - 1 &&
-          Math.abs(curr.width - longestInCurrBatch) < 28
+          differenceInWidth(curr.width, longestInCurrBatch) < acceptableSize
         ) {
           batched[batch].push(curr);
         } else if (
           i !== textWithWidths.length - 1 &&
-          Math.abs(curr.width - longestInCurrBatch) < 28
+          differenceInWidth(curr.width, longestInCurrBatch) < acceptableSize
         ) {
           batched[batch].push(curr);
         } else {
@@ -120,7 +115,7 @@ function CaptionCreator() {
     }
 
     console.log(batched);
-    setBatchedLines([["Textaa"], ["texti", "textaa"]]);
+
     setBatchedLines(batched.map((x) => x.map((y) => y.label)));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -232,7 +227,7 @@ function CaptionCreator() {
             position: "absolute",
             textAlign: "center",
             top: "0px",
-            // visibility: "hidden",
+            visibility: "hidden",
           }}
         >
           <Text
@@ -251,7 +246,6 @@ function CaptionCreator() {
           const isOnlyBatch = batchedLines.length === 1;
           const isFirstBatch = i === 0;
           const isLastBatch = i === batchedLines.length - 1;
-
           return (
             <Box key={i}>
               {batch.map((line, j) => {
@@ -343,7 +337,7 @@ function CaptionCreator() {
                   <Box
                     key={j}
                     sx={{
-                      backgroundColor: "red",
+                      backgroundColor: line.length > 0 ? "red" : "transparent",
                       padding: "1rem 1.1rem 0.75rem 1.1rem",
                       position: "relative",
                       marginTop: "-1px",
@@ -355,7 +349,7 @@ function CaptionCreator() {
                       textAlign: "center",
                     }}
                   >
-                    {outerCurves}
+                    {line.length > 0 && outerCurves}
                     <Text
                       className="tiktok-classic-text"
                       size="2rem"
