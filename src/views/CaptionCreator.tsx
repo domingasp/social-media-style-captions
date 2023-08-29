@@ -1,8 +1,8 @@
 import { Box, Button, Stack, Text, Textarea, Title } from "@mantine/core";
 import { toSvg } from "html-to-image";
-import { useEffect, useState } from "react";
+import React, { createRef, useCallback, useEffect, useState } from "react";
 
-const getTextWidth = function getTextWidth(text: string) {
+const getTextWidthCanvas = function getTextWidth(text: string) {
   const canvas: HTMLCanvasElement = document.createElement("canvas");
   const context = canvas.getContext("2d");
   context!.font = "600 Nunito Sans sans-serif";
@@ -10,15 +10,43 @@ const getTextWidth = function getTextWidth(text: string) {
   return metrics.width;
 };
 
-const isSimilarLength = function isSimilarLength(
-  text: string,
-  nextText: string
-) {
-  return Math.abs(getTextWidth(text) - getTextWidth(nextText)) < 7.5;
+const isShorter = function isShorter(text: string, textToCompare: string) {
+  return getTextWidthCanvas(text) < getTextWidthCanvas(textToCompare);
 };
 
-const isShorter = function isShorter(text: string, textToCompare: string) {
-  return getTextWidth(text) < getTextWidth(textToCompare);
+const getTextWidth = function getTextWidth(
+  wrapperDiv: HTMLDivElement,
+  textDiv: HTMLDivElement,
+  text: string
+) {
+  if (textDiv) {
+    textDiv.innerText = text;
+    const textSize = wrapperDiv.getBoundingClientRect().width;
+
+    return textSize ?? 0;
+  }
+  return 0;
+};
+
+const differenceInWidth = function differenceInWidth(
+  containerDiv: HTMLDivElement,
+  textDiv: HTMLDivElement,
+  text: string,
+  toCompare: string
+) {
+  return Math.abs(
+    getTextWidth(containerDiv, textDiv, text) -
+      getTextWidth(containerDiv, textDiv, toCompare)
+  );
+};
+
+const isSimilarLength = function isSimilarLength(
+  containerDiv: HTMLDivElement,
+  textDiv: HTMLDivElement,
+  text: string,
+  toCompare: string
+) {
+  return differenceInWidth(containerDiv, textDiv, text, toCompare) < 24;
 };
 
 function CaptionCreator() {
@@ -27,23 +55,75 @@ function CaptionCreator() {
   const [content, setContent] = useState("Text\nTesting");
   const [batchedLines, setBatchedLines] = useState<string[][]>([]);
 
+  const containerRef = createRef<HTMLDivElement>();
+  const textRef = createRef<HTMLDivElement>();
+
   useEffect(() => {
     const contentSplit = content.split("\n");
 
-    const batched: string[][] = [[contentSplit[0]]];
-    let batch = 0;
-    for (let i = 0; i < contentSplit.length - 1; i += 1) {
-      const next = contentSplit[i + 1];
-
-      if (batched[batch].some((x) => !isSimilarLength(next, x))) {
-        batch += 1;
-        if (batched.length === batch) batched.push([]);
+    const textWithWidths: { label: string; width: number }[] = [];
+    for (let i = 0; i < contentSplit.length; i += 1) {
+      if (containerRef.current !== null && textRef.current !== null) {
+        textWithWidths.push({
+          label: contentSplit[i],
+          width: getTextWidth(
+            containerRef.current!,
+            textRef.current!,
+            contentSplit[i]
+          ),
+        });
       }
-
-      batched[batch].push(next);
     }
 
-    setBatchedLines(batched);
+    const batched: { label: string; width: number }[][] = [[]];
+    let batch = 0;
+    for (let i = 0; i < textWithWidths.length; i += 1) {
+      const curr = textWithWidths[i];
+
+      if (i === 0) batched[batch].push(curr);
+      else {
+        const longestInCurrBatch = Math.max(
+          ...batched[batch].map((x) => x.width)
+        );
+
+        let j = i + 1;
+        let longestInFuture = 0;
+        while (
+          j < textWithWidths.length &&
+          Math.abs(curr.width - textWithWidths[j].width) < 28
+        ) {
+          if (longestInFuture < textWithWidths[j].width) {
+            longestInFuture = textWithWidths[j].width;
+          }
+
+          j += 1;
+        }
+
+        if (Math.abs(longestInFuture - longestInCurrBatch) < 28) {
+          batched[batch].push(curr);
+        } else if (
+          i === textWithWidths.length - 1 &&
+          Math.abs(curr.width - longestInCurrBatch) < 28
+        ) {
+          batched[batch].push(curr);
+        } else if (
+          i !== textWithWidths.length - 1 &&
+          Math.abs(curr.width - longestInCurrBatch) < 28
+        ) {
+          batched[batch].push(curr);
+        } else {
+          batch += 1;
+          batched.push([]);
+          batched[batch].push(curr);
+        }
+      }
+    }
+
+    console.log(batched);
+    setBatchedLines([["Textaa"], ["texti", "textaa"]]);
+    setBatchedLines(batched.map((x) => x.map((y) => y.label)));
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [content]);
 
   const getOuterRadius = function getOuterRadius(
@@ -144,6 +224,29 @@ function CaptionCreator() {
       </Button>
 
       <Stack align="center" spacing={0} id="output" p="10px 30px">
+        <Box
+          ref={containerRef}
+          sx={{
+            backgroundColor: "red",
+            padding: "1rem 1.1rem 0.75rem 1.1rem",
+            position: "absolute",
+            textAlign: "center",
+            top: "0px",
+            // visibility: "hidden",
+          }}
+        >
+          <Text
+            className="tiktok-classic-text"
+            size="2rem"
+            ref={textRef}
+            sx={{
+              lineHeight: "1.75rem",
+            }}
+          >
+            abc
+          </Text>
+        </Box>
+
         {batchedLines.map((batch, i) => {
           const isOnlyBatch = batchedLines.length === 1;
           const isFirstBatch = i === 0;
