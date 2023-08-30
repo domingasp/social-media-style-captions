@@ -66,7 +66,7 @@ function CaptionCreator() {
         lol
       </Button>
 
-      <Stack align="center" spacing={0} id="output" p="10px 30px">
+      <Stack align="center" spacing={0} id="output" p="2rem 30px">
         <Box
           ref={containerRef}
           sx={{
