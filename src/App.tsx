@@ -1,4 +1,4 @@
-import CaptionCreator from "./views/CaptionCreator";
+import CaptionCreator from "./views/caption-creator/CaptionCreator";
 import "./styles/app.css";
 
 function App() {
