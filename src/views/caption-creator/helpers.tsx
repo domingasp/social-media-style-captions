@@ -1,5 +1,6 @@
 import { Box } from "@mantine/core";
 import { LabelWidth } from "./types/LabelWidth";
+import IsShorter from "./types/IsShorter";
 
 const getTextWidthOnCanvas = function getTextOnWidth(text: string) {
   const canvas: HTMLCanvasElement = document.createElement("canvas");
@@ -179,4 +180,84 @@ export const batchLines = function batchLines(
   }
 
   return batched.map((x) => x.map((y) => y.label));
+};
+
+export const longestStringInArray = function longestStringInArray(
+  arr: string[]
+) {
+  return arr.reduce((a, b) => (a.length > b.length ? a : b));
+};
+
+export const isTextShorterThanSurroundingText =
+  function isTextShorterThanSurroundingText(
+    longestInCurrBatch: string,
+    longestInPrevBatch: string | undefined,
+    longestInNextBatch: string | undefined
+  ): IsShorter {
+    let thanAbove = false;
+    let thanBelow = false;
+
+    if (longestInPrevBatch || longestInNextBatch) {
+      if (!longestInPrevBatch && longestInNextBatch) {
+        thanBelow = isShorter(longestInCurrBatch, longestInNextBatch);
+      }
+      if (!longestInNextBatch && longestInPrevBatch) {
+        thanAbove = isShorter(longestInCurrBatch, longestInPrevBatch);
+      }
+      if (longestInPrevBatch && longestInNextBatch) {
+        thanBelow = isShorter(longestInCurrBatch, longestInNextBatch);
+        thanAbove = isShorter(longestInCurrBatch, longestInPrevBatch);
+      }
+    }
+
+    return { thanAbove, thanBelow };
+  };
+
+export const getTextDivRadii = function getTextDivRadii(
+  isShorter: IsShorter,
+  radius: string
+) {
+  let topLeft, topRight, bottomLeft, bottomRight;
+  topLeft = topRight = bottomLeft = bottomRight = "0px";
+
+  if (isShorter.thanAbove) {
+    bottomLeft = bottomRight = radius;
+  }
+  if (isShorter.thanBelow) {
+    topLeft = topRight = radius;
+  }
+  if (!isShorter.thanAbove && !isShorter.thanBelow) {
+    topLeft = topRight = bottomLeft = bottomRight = radius;
+  }
+
+  return { topLeft, topRight, bottomLeft, bottomRight };
+};
+
+export const getTextDivOuterCurves = function getTextDivOuterCurves(
+  isFirstBatch: boolean,
+  isLastBatch: boolean,
+  isFirst: boolean,
+  isLast: boolean,
+  isShorter: IsShorter,
+  radius: string
+) {
+  let outerCurves = <></>;
+
+  if (
+    (isFirstBatch && isLast) ||
+    (isLastBatch && isFirst) ||
+    (!isFirstBatch &&
+      !isLastBatch &&
+      ((isFirst && isShorter.thanAbove) || (isLast && isShorter.thanBelow)))
+  ) {
+    if (isShorter.thanAbove && isShorter.thanBelow) {
+      outerCurves = getFullOuterRadius("full", radius);
+    } else if (isShorter.thanAbove) {
+      outerCurves = getFullOuterRadius("top", radius);
+    } else if (isShorter.thanBelow) {
+      outerCurves = getFullOuterRadius("bottom", radius);
+    }
+  }
+
+  return outerCurves;
 };

@@ -1,7 +1,15 @@
 import { Box, Button, Stack, Text, Textarea, Title } from "@mantine/core";
 import { toSvg } from "html-to-image";
 import { createRef, useEffect, useState } from "react";
-import { isShorter, getFullOuterRadius, batchLines } from "./helpers";
+import {
+  isShorter,
+  getFullOuterRadius,
+  batchLines,
+  isTextShorterThanSurroundingText,
+  longestStringInArray,
+  getTextDivRadii,
+  getTextDivOuterCurves,
+} from "./helpers";
 
 function CaptionCreator() {
   const radius = "9px";
@@ -84,137 +92,61 @@ function CaptionCreator() {
           </Text>
         </Box>
 
-        {batchedLines.map((batch, i) => {
-          const isOnlyBatch = batchedLines.length === 1;
-          const isFirstBatch = i === 0;
-          const isLastBatch = i === batchedLines.length - 1;
-          return (
-            <Box key={i} sx={{ zIndex: 100 - i }}>
-              {batch.map((line, j) => {
-                const isOnly = batch.length === 1;
-                const isFirst = j === 0;
-                const isLast = j === batch.length - 1;
+        {batchedLines.map((batch, i) => (
+          <Box key={i} sx={{ zIndex: 100 - i }}>
+            {batch.map((line, j) => {
+              const isShorter = isTextShorterThanSurroundingText(
+                longestStringInArray(batchedLines[i]),
+                batchedLines[i - 1] && batchedLines[i - 1].length > 0
+                  ? longestStringInArray(batchedLines[i - 1])
+                  : undefined,
+                batchedLines[i + 1] && batchedLines[i + 1].length > 0
+                  ? longestStringInArray(batchedLines[i + 1])
+                  : undefined
+              );
 
-                let topLeftRadius,
-                  topRightRadius,
-                  bottomLeftRadius,
-                  bottomRightRadius;
-                topLeftRadius =
-                  topRightRadius =
-                  bottomLeftRadius =
-                  bottomRightRadius =
-                    "0px";
+              const outerCurves = getTextDivOuterCurves(
+                i === 0,
+                i === batchedLines.length - 1,
+                j === 0,
+                j === batch.length - 1,
+                isShorter,
+                radius
+              );
+              const radii = getTextDivRadii(isShorter, radius);
 
-                let outerCurves = <></>;
-
-                let shorterThanAbove = false; // isShorter(line, batchedLines[i - 1].at(-1)!)
-                let shorterThanBelow = false; // isShorter(line, batchedLines[i + 1][0])
-                const longestLineInBatch = batchedLines[i].reduce((a, b) =>
-                  a.length > b.length ? a : b
-                );
-                if (!isOnlyBatch) {
-                  if (isFirstBatch || !isLastBatch) {
-                    shorterThanBelow = isShorter(
-                      longestLineInBatch,
-                      batchedLines[i + 1][0]
-                    );
-                  }
-                  if (isLastBatch || !isFirstBatch) {
-                    shorterThanAbove = isShorter(
-                      longestLineInBatch,
-                      batchedLines[i - 1].at(-1)!
-                    );
-                  }
-                }
-
-                // Radius and Curves
-                if (isOnlyBatch) {
-                  if (isFirst) topLeftRadius = topRightRadius = radius;
-                  if (isLast) bottomLeftRadius = bottomRightRadius = radius;
-                } else if (isFirstBatch) {
-                  if (isFirst) {
-                    topLeftRadius = topRightRadius = radius;
-                  }
-                  if (isLast && shorterThanBelow) {
-                    bottomLeftRadius = bottomRightRadius = radius;
-                    outerCurves = getFullOuterRadius("bottom", radius);
-                  }
-                } else if (isLastBatch) {
-                  if (isLast) {
-                    bottomLeftRadius = bottomRightRadius = radius;
-                  }
-                  if (isFirst) {
-                    if (shorterThanAbove) {
-                      outerCurves = getFullOuterRadius("top", radius);
-                    } else {
-                      topLeftRadius = topRightRadius = radius;
-                    }
-                  }
-                } else {
-                  if (isOnly) {
-                    if (!shorterThanAbove && !shorterThanBelow) {
-                      topLeftRadius =
-                        topRightRadius =
-                        bottomLeftRadius =
-                        bottomRightRadius =
-                          radius;
-                    } else if (shorterThanAbove && !shorterThanBelow) {
-                      bottomLeftRadius = bottomRightRadius = radius;
-                      outerCurves = getFullOuterRadius("top", radius);
-                    } else if (!shorterThanAbove && shorterThanBelow) {
-                      topLeftRadius = topRightRadius = radius;
-                      outerCurves = getFullOuterRadius("bottom", radius);
-                    } else if (shorterThanAbove && shorterThanBelow) {
-                      outerCurves = getFullOuterRadius("full", radius);
-                    }
-                  } else if (isFirst) {
-                    if (shorterThanAbove) {
-                      outerCurves = getFullOuterRadius("top", radius);
-                    } else {
-                      topLeftRadius = topRightRadius = radius;
-                    }
-                  } else if (isLast) {
-                    if (shorterThanBelow) {
-                      outerCurves = getFullOuterRadius("bottom", radius);
-                    } else {
-                      bottomLeftRadius = bottomRightRadius = radius;
-                    }
-                  }
-                }
-
-                return (
-                  <Box
-                    key={j}
+              return (
+                <Box
+                  key={j}
+                  sx={{
+                    backgroundColor: line.length > 0 ? "red" : "transparent",
+                    padding: "1rem 1.1rem 1rem 1.1rem",
+                    position: "relative",
+                    marginTop: line.length === 0 ? "8px" : "-0.9rem",
+                    borderTopLeftRadius: radii.topLeft,
+                    borderTopRightRadius: radii.topRight,
+                    borderBottomLeftRadius: radii.bottomLeft,
+                    borderBottomRightRadius: radii.bottomRight,
+                    width: "100%",
+                    textAlign: "center",
+                    zIndex: 100 - j,
+                  }}
+                >
+                  {line.length > 0 && outerCurves}
+                  <Text
+                    className="tiktok-classic-text"
+                    size="2rem"
                     sx={{
-                      backgroundColor: line.length > 0 ? "red" : "transparent",
-                      padding: "1rem 1.1rem 1rem 1.1rem",
-                      position: "relative",
-                      marginTop: line.length === 0 ? "8px" : "-0.9rem",
-                      borderTopLeftRadius: topLeftRadius,
-                      borderTopRightRadius: topRightRadius,
-                      borderBottomLeftRadius: bottomLeftRadius,
-                      borderBottomRightRadius: bottomRightRadius,
-                      width: "100%",
-                      textAlign: "center",
-                      zIndex: 100 - j,
+                      lineHeight: "1.5rem",
                     }}
                   >
-                    {line.length > 0 && outerCurves}
-                    <Text
-                      className="tiktok-classic-text"
-                      size="2rem"
-                      sx={{
-                        lineHeight: "1.5rem",
-                      }}
-                    >
-                      {line}
-                    </Text>
-                  </Box>
-                );
-              })}
-            </Box>
-          );
-        })}
+                    {line}
+                  </Text>
+                </Box>
+              );
+            })}
+          </Box>
+        ))}
       </Stack>
     </Stack>
   );
