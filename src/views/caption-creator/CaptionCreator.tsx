@@ -1,5 +1,13 @@
-import { Box, Button, Stack, Text, Textarea, Title } from "@mantine/core";
-import { toSvg } from "html-to-image";
+import {
+  Box,
+  Button,
+  Group,
+  Stack,
+  Text,
+  Textarea,
+  Title,
+} from "@mantine/core";
+import { toPng, toSvg } from "html-to-image";
 import { createRef, useEffect, useState } from "react";
 import {
   batchLines,
@@ -8,6 +16,8 @@ import {
   getTextDivRadii,
   getTextDivOuterCurves,
 } from "./helpers";
+import FileSaver from "file-saver";
+import { IconPhoto, IconPhotoCode } from "@tabler/icons-react";
 
 function CaptionCreator() {
   const radius = "9px";
@@ -32,6 +42,13 @@ function CaptionCreator() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [content]);
 
+  const saveToFile = async function saveToFile(type: "png" | "svg") {
+    const node = document.getElementById("output");
+
+    const dataUrl = "png" ? await toPng(node!) : await toSvg(node!);
+    FileSaver.saveAs(dataUrl, batchedLines.flat(1).join("-"));
+  };
+
   return (
     <Stack p="md" align="center">
       <Title>TikTok Style Text Generator</Title>
@@ -48,23 +65,25 @@ function CaptionCreator() {
         Result:
       </Text>
 
-      <Button
-        onClick={() => {
-          var node = document.getElementById("output");
-
-          toSvg(node!)
-            .then(function (dataUrl) {
-              var img = new Image();
-              img.src = dataUrl;
-              document.body.appendChild(img);
-            })
-            .catch(function (error) {
-              console.error("oops, something went wrong!", error);
-            });
-        }}
-      >
-        lol
-      </Button>
+      <Group>
+        <Text>Save:</Text>
+        <Button.Group>
+          <Button
+            variant="default"
+            leftIcon={<IconPhoto size="1.25rem" />}
+            onClick={() => saveToFile("png")}
+          >
+            PNG
+          </Button>
+          <Button
+            variant="default"
+            leftIcon={<IconPhotoCode size="1.25rem" />}
+            onClick={() => saveToFile("svg")}
+          >
+            SVG
+          </Button>
+        </Button.Group>
+      </Group>
 
       <Stack align="center" spacing={0} id="output" p="2rem 30px">
         <Box
