@@ -64,12 +64,12 @@ function CaptionCreator() {
         <Box
           ref={containerRef}
           sx={{
-            backgroundColor: "red",
             padding: "1rem 1.1rem 0.75rem 1.1rem",
             position: "absolute",
             textAlign: "center",
             top: "0px",
             visibility: "hidden",
+            opacity: "0%",
           }}
         >
           <Text
@@ -107,6 +107,26 @@ function CaptionCreator() {
 
                 let outerCurves = <></>;
 
+                let shorterThanAbove = false; // isShorter(line, batchedLines[i - 1].at(-1)!)
+                let shorterThanBelow = false; // isShorter(line, batchedLines[i + 1][0])
+                const longestLineInBatch = batchedLines[i].reduce((a, b) =>
+                  a.length > b.length ? a : b
+                );
+                if (!isOnlyBatch) {
+                  if (isFirstBatch || !isLastBatch) {
+                    shorterThanBelow = isShorter(
+                      longestLineInBatch,
+                      batchedLines[i + 1][0]
+                    );
+                  }
+                  if (isLastBatch || !isFirstBatch) {
+                    shorterThanAbove = isShorter(
+                      longestLineInBatch,
+                      batchedLines[i - 1].at(-1)!
+                    );
+                  }
+                }
+
                 // Radius and Curves
                 if (isOnlyBatch) {
                   if (isFirst) topLeftRadius = topRightRadius = radius;
@@ -115,40 +135,23 @@ function CaptionCreator() {
                   if (isFirst) {
                     topLeftRadius = topRightRadius = radius;
                   }
-                  if (isLast) {
-                    const shorter = isShorter(line, batchedLines[i + 1][0]);
-                    bottomLeftRadius = bottomRightRadius = shorter
-                      ? "0px"
-                      : radius;
-
-                    if (shorter) {
-                      outerCurves = getFullOuterRadius("bottom", radius);
-                    }
+                  if (isLast && shorterThanBelow) {
+                    bottomLeftRadius = bottomRightRadius = radius;
+                    outerCurves = getFullOuterRadius("bottom", radius);
                   }
                 } else if (isLastBatch) {
-                  if (isLast) bottomLeftRadius = bottomRightRadius = radius;
+                  if (isLast) {
+                    bottomLeftRadius = bottomRightRadius = radius;
+                  }
                   if (isFirst) {
-                    const shorter = isShorter(
-                      line,
-                      batchedLines[i - 1].at(-1)!
-                    );
-                    topLeftRadius = topRightRadius = shorter ? "0px" : radius;
-
-                    if (shorter) {
+                    if (shorterThanAbove) {
                       outerCurves = getFullOuterRadius("top", radius);
+                    } else {
+                      topLeftRadius = topRightRadius = radius;
                     }
                   }
                 } else {
                   if (isOnly) {
-                    const shorterThanAbove = isShorter(
-                      line,
-                      batchedLines[i - 1].at(-1)!
-                    );
-                    const shorterThanBelow = isShorter(
-                      line,
-                      batchedLines[i + 1][0]
-                    );
-
                     if (!shorterThanAbove && !shorterThanBelow) {
                       topLeftRadius =
                         topRightRadius =
@@ -165,22 +168,17 @@ function CaptionCreator() {
                       outerCurves = getFullOuterRadius("full", radius);
                     }
                   } else if (isFirst) {
-                    const shorter = isShorter(
-                      line,
-                      batchedLines[i - 1].at(-1)!
-                    );
-                    topLeftRadius = topRightRadius = shorter ? "0px" : radius;
-
-                    if (shorter)
+                    if (shorterThanAbove) {
                       outerCurves = getFullOuterRadius("top", radius);
+                    } else {
+                      topLeftRadius = topRightRadius = radius;
+                    }
                   } else if (isLast) {
-                    const shorter = isShorter(line, batchedLines[i + 1][0]);
-                    bottomLeftRadius = bottomRightRadius = shorter
-                      ? "0px"
-                      : radius;
-
-                    if (shorter)
+                    if (shorterThanBelow) {
                       outerCurves = getFullOuterRadius("bottom", radius);
+                    } else {
+                      bottomLeftRadius = bottomRightRadius = radius;
+                    }
                   }
                 }
 
