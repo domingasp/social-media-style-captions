@@ -1,4 +1,5 @@
 import { Box } from "@mantine/core";
+import { LabelWidth } from "./types/LabelWidth";
 
 const getTextWidthOnCanvas = function getTextOnWidth(text: string) {
   const canvas: HTMLCanvasElement = document.createElement("canvas");
@@ -103,12 +104,35 @@ export const getFullOuterRadius = function getFullOuterRadius(
   );
 };
 
+const getLongestTextAfterCurrent = function getLongestTextAfterCurrent(
+  array: LabelWidth[],
+  startIdx: number,
+  widthToCompareTo: number,
+  acceptableSizeSimilarity: number
+) {
+  let longestInFuture = 0;
+  for (let i = startIdx; i < array.length; i += 1) {
+    if (
+      differenceInWidth(widthToCompareTo, array[i].width) >
+      acceptableSizeSimilarity
+    ) {
+      break;
+    }
+
+    if (longestInFuture < array[i].width) {
+      longestInFuture = array[i].width;
+    }
+  }
+
+  return longestInFuture;
+};
+
 export const batchLines = function batchLines(
   lines: string[],
   wrapperDiv: HTMLDivElement,
   textDiv: HTMLDivElement
 ) {
-  const acceptableSimilaritySize = 36;
+  const acceptableSizeSimilarity = 36;
 
   const textWithWidths: { label: string; width: number }[] = lines.map(
     (line) => ({
@@ -118,53 +142,32 @@ export const batchLines = function batchLines(
   );
 
   const batched: { label: string; width: number }[][] = [[]];
-
   let batch = 0;
   for (let i = 0; i < textWithWidths.length; i += 1) {
     const curr = textWithWidths[i];
 
     if (curr.label.length === 0) {
-      batch += 1;
-      batched.push([{ label: "", width: 0 }]);
-      batch += 1;
-      batched.push([]);
-    } else if (i === 0) batched[batch].push(curr);
-    else {
+      batch += 2;
+      batched.push([{ label: "", width: 0 }], []);
+    } else if (i === 0 || batched[batch].length === 0) {
+      batched[batch].push(curr);
+    } else {
       const longestInCurrBatch = Math.max(
         ...batched[batch].map((x) => x.width)
       );
 
-      let j = i + 1;
-      let longestInFuture = 0;
-      while (
-        j < textWithWidths.length &&
-        differenceInWidth(curr.width, textWithWidths[j].width) <
-          acceptableSimilaritySize
-      ) {
-        if (longestInFuture < textWithWidths[j].width) {
-          longestInFuture = textWithWidths[j].width;
-        }
+      const longestInFuture = getLongestTextAfterCurrent(
+        textWithWidths,
+        i + 1,
+        curr.width,
+        acceptableSizeSimilarity
+      );
 
-        j += 1;
-      }
-
-      if (batched[batch].length === 0) {
-        batched[batch].push(curr);
-      } else if (
+      if (
         differenceInWidth(longestInFuture, longestInCurrBatch) <
-        acceptableSimilaritySize
-      ) {
-        batched[batch].push(curr);
-      } else if (
-        i === textWithWidths.length - 1 &&
+          acceptableSizeSimilarity ||
         differenceInWidth(curr.width, longestInCurrBatch) <
-          acceptableSimilaritySize
-      ) {
-        batched[batch].push(curr);
-      } else if (
-        i !== textWithWidths.length - 1 &&
-        differenceInWidth(curr.width, longestInCurrBatch) <
-          acceptableSimilaritySize
+          acceptableSizeSimilarity
       ) {
         batched[batch].push(curr);
       } else {
