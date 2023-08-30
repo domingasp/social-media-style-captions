@@ -2,8 +2,6 @@ import { Box, Button, Stack, Text, Textarea, Title } from "@mantine/core";
 import { toSvg } from "html-to-image";
 import { createRef, useEffect, useState } from "react";
 import {
-  isShorter,
-  getFullOuterRadius,
   batchLines,
   isTextShorterThanSurroundingText,
   longestStringInArray,
