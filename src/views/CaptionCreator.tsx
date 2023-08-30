@@ -114,8 +114,6 @@ function CaptionCreator() {
       }
     }
 
-    console.log(batched);
-
     setBatchedLines(batched.map((x) => x.map((y) => y.label)));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -161,8 +159,8 @@ function CaptionCreator() {
           backgroundColor: "transparent",
           position: "absolute",
           width: "20px",
-          top: "-0px",
-          height: "100%",
+          top: "25%",
+          height: "50%",
           outline: "solid 10px red",
           clipPath: clipPath,
           left: position.includes("left") ? "-20px" : "unset",
@@ -238,7 +236,7 @@ function CaptionCreator() {
               lineHeight: "1.75rem",
             }}
           >
-            abc
+            For Width Measurements
           </Text>
         </Box>
 
@@ -247,7 +245,7 @@ function CaptionCreator() {
           const isFirstBatch = i === 0;
           const isLastBatch = i === batchedLines.length - 1;
           return (
-            <Box key={i}>
+            <Box key={i} sx={{ zIndex: 100 - i }}>
               {batch.map((line, j) => {
                 const isOnly = batch.length === 1;
                 const isFirst = j === 0;
@@ -265,18 +263,23 @@ function CaptionCreator() {
 
                 let outerCurves = <></>;
 
+                // Radius and Curves
                 if (isOnlyBatch) {
                   if (isFirst) topLeftRadius = topRightRadius = radius;
                   if (isLast) bottomLeftRadius = bottomRightRadius = radius;
                 } else if (isFirstBatch) {
-                  if (isFirst) topLeftRadius = topRightRadius = radius;
+                  if (isFirst) {
+                    topLeftRadius = topRightRadius = radius;
+                  }
                   if (isLast) {
                     const shorter = isShorter(line, batchedLines[i + 1][0]);
                     bottomLeftRadius = bottomRightRadius = shorter
                       ? "0px"
                       : radius;
 
-                    if (shorter) outerCurves = getFullOuterRadius("bottom");
+                    if (shorter) {
+                      outerCurves = getFullOuterRadius("bottom");
+                    }
                   }
                 } else if (isLastBatch) {
                   if (isLast) bottomLeftRadius = bottomRightRadius = radius;
@@ -287,7 +290,9 @@ function CaptionCreator() {
                     );
                     topLeftRadius = topRightRadius = shorter ? "0px" : radius;
 
-                    if (shorter) outerCurves = getFullOuterRadius("top");
+                    if (shorter) {
+                      outerCurves = getFullOuterRadius("top");
+                    }
                   }
                 } else {
                   if (isOnly) {
@@ -338,15 +343,16 @@ function CaptionCreator() {
                     key={j}
                     sx={{
                       backgroundColor: line.length > 0 ? "red" : "transparent",
-                      padding: "1rem 1.1rem 0.75rem 1.1rem",
+                      padding: "1rem 1.1rem 1rem 1.1rem",
                       position: "relative",
-                      marginTop: "-1px",
+                      marginTop: line.length === 0 ? "8px" : "-0.9rem",
                       borderTopLeftRadius: topLeftRadius,
                       borderTopRightRadius: topRightRadius,
                       borderBottomLeftRadius: bottomLeftRadius,
                       borderBottomRightRadius: bottomRightRadius,
                       width: "100%",
                       textAlign: "center",
+                      zIndex: 100 - j,
                     }}
                   >
                     {line.length > 0 && outerCurves}
@@ -354,7 +360,7 @@ function CaptionCreator() {
                       className="tiktok-classic-text"
                       size="2rem"
                       sx={{
-                        lineHeight: "1.75rem",
+                        lineHeight: "1.5rem",
                       }}
                     >
                       {line}
