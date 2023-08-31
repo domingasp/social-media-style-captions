@@ -25,6 +25,7 @@ function CaptionCreator() {
 
   const [content, setContent] = useState("Text\nTesting");
   const [batchedLines, setBatchedLines] = useState<string[][]>([]);
+  const [styleValue, setStyleValue] = useState("plain");
 
   const containerRef = createRef<HTMLDivElement>();
   const textRef = createRef<HTMLDivElement>();
@@ -62,7 +63,7 @@ function CaptionCreator() {
         onChange={(event) => setContent(event.currentTarget.value)}
       />
 
-      <TextStyleSelector />
+      <TextStyleSelector value={styleValue} setValue={setStyleValue} />
 
       <Text size="lg" weight="bold">
         Result:
