@@ -125,7 +125,7 @@ const FormattedTextBackgroundOnly = function FormattedTextBackgroundOnly({
                 sx={{
                   position: "relative",
                   backgroundColor: getBackgroundColor(line),
-                  marginTop: line.length === 0 ? "8px" : "-0.9rem",
+                  marginTop: line.length === 0 ? "8px" : "-0.88rem",
                   borderRadius: `${radii.topLeft} ${radii.topRight} ${radii.bottomRight} ${radii.bottomLeft}`,
                   width: "100%",
                   zIndex: 100 - j,
@@ -164,7 +164,7 @@ const FormattedText = function FormattedText({
                     position: "relative",
                     width: "100%",
                     zIndex: 100 - j,
-                    marginTop: line.length === 0 ? "8px" : "-0.9rem",
+                    marginTop: line.length === 0 ? "8px" : "-0.88rem",
                   }}
                 >
                   <FormattedTextAsDiv content={line} />
