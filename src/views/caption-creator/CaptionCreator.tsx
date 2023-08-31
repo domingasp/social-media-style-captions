@@ -58,6 +58,32 @@ function CaptionCreator() {
         onChange={(event) => setContent(event.currentTarget.value)}
       />
 
+      <Group w="100%" position="apart">
+        <Text size="lg" weight="bold">
+          Result
+        </Text>
+
+        <Group>
+          <Text>Save:</Text>
+          <Button.Group>
+            <Button
+              variant="default"
+              leftIcon={<IconPhoto size="1.25rem" />}
+              onClick={() => saveToFile("png")}
+            >
+              PNG
+            </Button>
+            <Button
+              variant="default"
+              leftIcon={<IconPhotoCode size="1.25rem" />}
+              onClick={() => saveToFile("svg")}
+            >
+              SVG
+            </Button>
+          </Button.Group>
+        </Group>
+      </Group>
+
       <Group>
         <AlignmentSelector
           value={alignmentValue}
@@ -67,31 +93,7 @@ function CaptionCreator() {
         <VariantSelector value={variantValue} setValue={setVariantValue} />
       </Group>
 
-      <Text size="lg" weight="bold">
-        Result:
-      </Text>
-
-      <Group>
-        <Text>Save:</Text>
-        <Button.Group>
-          <Button
-            variant="default"
-            leftIcon={<IconPhoto size="1.25rem" />}
-            onClick={() => saveToFile("png")}
-          >
-            PNG
-          </Button>
-          <Button
-            variant="default"
-            leftIcon={<IconPhotoCode size="1.25rem" />}
-            onClick={() => saveToFile("svg")}
-          >
-            SVG
-          </Button>
-        </Button.Group>
-      </Group>
-
-      <Box bg="gray">
+      <Box bg="gray" w="100%" sx={{ overflow: "scroll" }}>
         <FormattedText
           containerRef={containerRef}
           textRef={textRef}

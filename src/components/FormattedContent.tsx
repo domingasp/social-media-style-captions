@@ -39,7 +39,6 @@ const TextWrapper = React.forwardRef<HTMLDivElement, TextWrapperProps>(
         ref={ref}
         sx={{
           padding: "1rem 1.1rem 1rem 1.1rem",
-          textAlign: "center",
           ...sx,
         }}
       >
@@ -170,6 +169,11 @@ const FormattedText = function FormattedText({
     <FormattedWrapper
       pos="absolute"
       top={0}
+      sx={{
+        left: 0,
+        right: 0,
+        margin: "auto",
+      }}
       align={alignmentToAlign(alignment)}
     >
       {batchedLines.map((batch, i) => (
