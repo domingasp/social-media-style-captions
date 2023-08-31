@@ -1,6 +1,6 @@
 import { Box, Card, Group, Stack, Sx, Text } from "@mantine/core";
 import SVGText from "../services/SVGText";
-import React, { FC, SetStateAction } from "react";
+import React, { SetStateAction } from "react";
 import { RadioGroup } from "@headlessui/react";
 
 type OptionWrapperProps = { children: React.ReactNode };
