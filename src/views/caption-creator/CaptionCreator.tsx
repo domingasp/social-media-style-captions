@@ -1,10 +1,18 @@
-import { Button, Group, Stack, Text, Textarea, Title } from "@mantine/core";
+import {
+  Box,
+  Button,
+  Group,
+  Stack,
+  Text,
+  Textarea,
+  Title,
+} from "@mantine/core";
 import { toPng, toSvg } from "html-to-image";
 import { createRef, useEffect, useState } from "react";
 import { batchLines } from "./helpers";
 import FileSaver from "file-saver";
 import { IconPhoto, IconPhotoCode } from "@tabler/icons-react";
-import FormattedText from "../../components/FormattedText";
+import FormattedText from "../../components/FormattedContent";
 import VariantSelector from "../../components/VariantSelector";
 
 function CaptionCreator() {

@@ -67,11 +67,11 @@ export const createOuterCurveDiv = function createOuterCurveDiv(
   }
   if (radiusPos === "bottom-left") {
     bottomLeft = radius;
-    clipPath = "polygon(-1% 75%, 50% 75%, 50% 100%, -1% 100%)";
+    clipPath = "polygon(-1% 66%, 50% 66%, 50% 100%, -1% 100%)";
   }
   if (radiusPos === "bottom-right") {
     bottomRight = radius;
-    clipPath = "polygon(50% 100%, 101% 100%, 101% 75%, 50% 75%)";
+    clipPath = "polygon(50% 100%, 101% 100%, 101% 66%, 50% 66%)";
   }
 
   return (
@@ -239,7 +239,8 @@ export const getTextDivOuterCurves = function getTextDivOuterCurves(
   isFirst: boolean,
   isLast: boolean,
   isShorter: IsShorter,
-  radius: string
+  radius: string,
+  color: string
 ) {
   let outerCurves = <></>;
 
@@ -251,11 +252,11 @@ export const getTextDivOuterCurves = function getTextDivOuterCurves(
       ((isFirst && isShorter.thanAbove) || (isLast && isShorter.thanBelow)))
   ) {
     if (isShorter.thanAbove && isShorter.thanBelow) {
-      outerCurves = getFullOuterRadius("full", radius);
+      outerCurves = getFullOuterRadius("full", radius, color);
     } else if (isShorter.thanAbove) {
-      outerCurves = getFullOuterRadius("top", radius);
+      outerCurves = getFullOuterRadius("top", radius, color);
     } else if (isShorter.thanBelow) {
-      outerCurves = getFullOuterRadius("bottom", radius);
+      outerCurves = getFullOuterRadius("bottom", radius, color);
     }
   }
 
