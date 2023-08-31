@@ -1,6 +1,6 @@
 import { Box } from "@mantine/core";
-import { LabelWidth } from "./types/LabelWidth";
 import IsShorter from "./types/IsShorter";
+import { LabelWidth } from "./types/LabelWidth";
 
 const getTextWidthOnCanvas = function getTextOnWidth(text: string) {
   const canvas: HTMLCanvasElement = document.createElement("canvas");
@@ -135,18 +135,31 @@ const getLongestTextAfterCurrent = function getLongestTextAfterCurrent(
 export const batchLines = function batchLines(
   lines: string[],
   wrapperDiv: HTMLDivElement,
-  textDiv: HTMLDivElement
+  textDiv: HTMLDivElement,
+  lineLengthLimit: number
 ) {
-  const acceptableSizeSimilarity = 36;
+  const acceptableSizeSimilarity = 40;
 
-  const textWithWidths: { label: string; width: number }[] = lines.map(
-    (line) => ({
-      label: line,
-      width: getTextWidthInDiv(wrapperDiv, textDiv, line),
-    })
-  );
+  const textWithWidths: LabelWidth[] = [];
+  lines.forEach((line) => {
+    if (line.length > lineLengthLimit) {
+      const splitRegex = new RegExp(`.{1,${lineLengthLimit}}`, "g");
+      const split = line.match(splitRegex);
+      split?.forEach((s) =>
+        textWithWidths.push({
+          label: s,
+          width: getTextWidthInDiv(wrapperDiv, textDiv, s),
+        })
+      );
+    } else {
+      textWithWidths.push({
+        label: line,
+        width: getTextWidthInDiv(wrapperDiv, textDiv, line),
+      });
+    }
+  });
 
-  const batched: { label: string; width: number }[][] = [[]];
+  const batched: LabelWidth[][] = [[]];
   let batch = 0;
   for (let i = 0; i < textWithWidths.length; i += 1) {
     const curr = textWithWidths[i];

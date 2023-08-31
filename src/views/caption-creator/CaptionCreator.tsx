@@ -1,7 +1,9 @@
 import {
   Box,
   Button,
+  Card,
   Group,
+  NumberInput,
   Stack,
   Text,
   Textarea,
@@ -19,6 +21,8 @@ import AlignmentSelector from "../../components/AlignmentSelector";
 function CaptionCreator() {
   const [content, setContent] = useState("Text\nTesting");
   const [batchedLines, setBatchedLines] = useState<string[][]>([]);
+
+  const [lineLimit, setLineLimit] = useState<number | "">(20);
   const [variantValue, setVariantValue] = useState("opaque-bg");
   const [alignmentValue, setAlignmentValue] = useState("center");
 
@@ -30,14 +34,19 @@ function CaptionCreator() {
 
     if (containerRef.current !== null && textRef.current !== null) {
       setBatchedLines(
-        batchLines(contentSplit, containerRef.current!, textRef.current!)
+        batchLines(
+          contentSplit,
+          containerRef.current!,
+          textRef.current!,
+          lineLimit !== "" ? lineLimit : 1
+        )
       );
     } else {
       setBatchedLines([]);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [content]);
+  }, [content, lineLimit]);
 
   const saveToFile = async function saveToFile(type: "png" | "svg") {
     const node = document.getElementById("output");
@@ -85,6 +94,25 @@ function CaptionCreator() {
       </Group>
 
       <Group>
+        <Card mah="92px" shadow="md" radius="md" withBorder maw="175px">
+          <NumberInput
+            value={lineLimit}
+            onChange={setLineLimit}
+            label="Line Char Limit"
+            styles={{
+              label: {
+                fontSize: "1rem",
+                fontWeight: "bold",
+                display: "block",
+                textAlign: "center",
+              },
+            }}
+            size="sm"
+            min={1}
+            max={50}
+          />
+        </Card>
+
         <AlignmentSelector
           value={alignmentValue}
           setValue={setAlignmentValue}
