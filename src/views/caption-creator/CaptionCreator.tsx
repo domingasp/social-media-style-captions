@@ -19,7 +19,7 @@ import AlignmentSelector from "../../components/AlignmentSelector";
 function CaptionCreator() {
   const [content, setContent] = useState("Text\nTesting");
   const [batchedLines, setBatchedLines] = useState<string[][]>([]);
-  const [variantValue, setVariantValue] = useState("plain");
+  const [variantValue, setVariantValue] = useState("opaque-bg");
   const [alignmentValue, setAlignmentValue] = useState("center");
 
   const containerRef = createRef<HTMLDivElement>();
