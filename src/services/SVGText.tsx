@@ -4,6 +4,7 @@ type SVGTextProps = {
   strokeColor?: string;
   style?: React.CSSProperties | undefined;
   className?: string;
+  alignmentSetting?: string;
 };
 
 const SVGText = function SVGText({
@@ -12,12 +13,25 @@ const SVGText = function SVGText({
   strokeColor = "black",
   style,
   className,
+  alignmentSetting = "center",
 }: SVGTextProps) {
+  const getXPosFromAlignment = function getXPosFromAlignment() {
+    if (alignmentSetting === "left") return "18%";
+    if (alignmentSetting === "right") return "82%";
+    return "50%";
+  };
+
+  const getTextAnchorFromAlignment = function getTextAnchorFromAlignment() {
+    if (alignmentSetting === "left") return "start";
+    if (alignmentSetting === "right") return "end";
+    return "middle";
+  };
+
   return (
     <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
       <text
         className={className}
-        x="50%"
+        x={getXPosFromAlignment()}
         y="55%"
         style={{
           fontSize: "1.25rem",
@@ -27,7 +41,7 @@ const SVGText = function SVGText({
           strokeWidth: "5px",
           strokeLinejoin: "round",
           paintOrder: "stroke fill",
-          textAnchor: "middle",
+          textAnchor: getTextAnchorFromAlignment(),
           alignmentBaseline: "middle",
           ...style,
         }}

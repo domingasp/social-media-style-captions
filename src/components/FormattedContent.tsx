@@ -196,6 +196,7 @@ const FormattedText = function FormattedText({
                       content={line}
                       className="tiktok-classic-text"
                       color="white"
+                      alignmentSetting={alignment}
                       style={{
                         fontSize: "2rem",
                         lineHeight: "1.5rem",
