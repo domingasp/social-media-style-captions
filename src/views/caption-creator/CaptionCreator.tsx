@@ -18,6 +18,7 @@ import {
 } from "./helpers";
 import FileSaver from "file-saver";
 import { IconPhoto, IconPhotoCode } from "@tabler/icons-react";
+import TextStyleSelector from "../../components/TextStyleSelector";
 
 function CaptionCreator() {
   const radius = "9px";
@@ -60,6 +61,8 @@ function CaptionCreator() {
         value={content}
         onChange={(event) => setContent(event.currentTarget.value)}
       />
+
+      <TextStyleSelector />
 
       <Text size="lg" weight="bold">
         Result:
