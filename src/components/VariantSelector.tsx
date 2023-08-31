@@ -2,11 +2,7 @@ import { Box, Card, Group, Stack, Sx, Text } from "@mantine/core";
 import SVGText from "../services/SVGText";
 import React, { SetStateAction } from "react";
 import { RadioGroup } from "@headlessui/react";
-
-type OptionWrapperProps = { children: React.ReactNode };
-const OptionWrapper = function OptionWrapper({ children }: OptionWrapperProps) {
-  return <Box sx={{ position: "relative", cursor: "pointer" }}>{children}</Box>;
-};
+import { OptionWrapper, getHighlight } from "./CommonSelectorComponents";
 
 type OptionTextProps = {
   sx?: Sx | (Sx | undefined)[] | undefined;
@@ -42,24 +38,6 @@ const VariantSelector = function VariantSelector({
 }: VariantSelectorProps) {
   const checkedColor = "#228BE6";
 
-  const getHighlight = function getHighlight() {
-    return (
-      <Box
-        sx={{
-          content: '""',
-          position: "absolute",
-          backgroundColor: checkedColor,
-          opacity: "10%",
-          width: "24px",
-          height: "24px",
-          top: 0,
-          left: -1,
-          borderRadius: 4,
-        }}
-      />
-    );
-  };
-
   return (
     <Card shadow="lg" radius="md" withBorder>
       <Stack spacing="sm">
@@ -74,7 +52,7 @@ const VariantSelector = function VariantSelector({
             <RadioGroup.Option value="plain">
               {({ checked }) => (
                 <OptionWrapper>
-                  {checked && getHighlight()}
+                  {checked && getHighlight(checkedColor)}
                   <OptionText
                     sx={{
                       boxShadow: `0px 0px 0px 3px ${
@@ -90,7 +68,7 @@ const VariantSelector = function VariantSelector({
             <RadioGroup.Option value="outline">
               {({ checked }) => (
                 <OptionWrapper>
-                  {checked && getHighlight()}
+                  {checked && getHighlight(checkedColor)}
                   <Box h="24px" w="22px" pos="relative">
                     <SVGText
                       content="A"
@@ -105,7 +83,7 @@ const VariantSelector = function VariantSelector({
             <RadioGroup.Option value="opaque-bg">
               {({ checked }) => (
                 <OptionWrapper>
-                  {checked && getHighlight()}
+                  {checked && getHighlight(checkedColor)}
                   <OptionText
                     sx={{
                       boxShadow: `0px 0px 0px 3px ${

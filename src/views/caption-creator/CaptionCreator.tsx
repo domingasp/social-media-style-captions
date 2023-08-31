@@ -14,11 +14,13 @@ import FileSaver from "file-saver";
 import { IconPhoto, IconPhotoCode } from "@tabler/icons-react";
 import FormattedText from "../../components/FormattedContent";
 import VariantSelector from "../../components/VariantSelector";
+import AlignmentSelector from "../../components/AlignmentSelector";
 
 function CaptionCreator() {
   const [content, setContent] = useState("Text\nTesting");
   const [batchedLines, setBatchedLines] = useState<string[][]>([]);
   const [variantValue, setVariantValue] = useState("plain");
+  const [alignmentValue, setAlignmentValue] = useState("center");
 
   const containerRef = createRef<HTMLDivElement>();
   const textRef = createRef<HTMLDivElement>();
@@ -56,7 +58,14 @@ function CaptionCreator() {
         onChange={(event) => setContent(event.currentTarget.value)}
       />
 
-      <VariantSelector value={variantValue} setValue={setVariantValue} />
+      <Group>
+        <AlignmentSelector
+          value={alignmentValue}
+          setValue={setAlignmentValue}
+        />
+
+        <VariantSelector value={variantValue} setValue={setVariantValue} />
+      </Group>
 
       <Text size="lg" weight="bold">
         Result:
