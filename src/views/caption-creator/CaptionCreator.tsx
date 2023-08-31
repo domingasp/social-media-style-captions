@@ -54,12 +54,6 @@ function CaptionCreator() {
         Result:
       </Text>
 
-      <FormattedText
-        containerRef={containerRef}
-        textRef={textRef}
-        batchedLines={batchedLines}
-      />
-
       <Group>
         <Text>Save:</Text>
         <Button.Group>
@@ -79,6 +73,12 @@ function CaptionCreator() {
           </Button>
         </Button.Group>
       </Group>
+
+      <FormattedText
+        containerRef={containerRef}
+        textRef={textRef}
+        batchedLines={batchedLines}
+      />
     </Stack>
   );
 }
