@@ -66,7 +66,7 @@ const VariantSelector = function VariantSelector({
         <RadioGroup value={value} onChange={setValue}>
           <RadioGroup.Label>
             <Text align="center" weight="bold">
-              Style
+              Variant
             </Text>
           </RadioGroup.Label>
 

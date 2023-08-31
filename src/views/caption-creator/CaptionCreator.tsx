@@ -40,7 +40,7 @@ function CaptionCreator() {
   const saveToFile = async function saveToFile(type: "png" | "svg") {
     const node = document.getElementById("output");
 
-    const dataUrl = "png" ? await toPng(node!) : await toSvg(node!);
+    const dataUrl = type === "png" ? await toPng(node!) : await toSvg(node!);
     FileSaver.saveAs(dataUrl, batchedLines.flat(1).join("-"));
   };
 
@@ -82,12 +82,14 @@ function CaptionCreator() {
         </Button.Group>
       </Group>
 
-      <FormattedText
-        containerRef={containerRef}
-        textRef={textRef}
-        batchedLines={batchedLines}
-        variant={variantValue}
-      />
+      <Box bg="gray">
+        <FormattedText
+          containerRef={containerRef}
+          textRef={textRef}
+          batchedLines={batchedLines}
+          variant={variantValue}
+        />
+      </Box>
     </Stack>
   );
 }

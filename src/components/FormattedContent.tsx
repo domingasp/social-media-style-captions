@@ -88,7 +88,7 @@ const FormattedTextBackgroundOnly = function FormattedTextBackgroundOnly({
   };
 
   return (
-    <FormattedWrapper opacity="100%">
+    <FormattedWrapper opacity={variant === "transparent-bg" ? "50%" : "100%"}>
       <TextWrapper
         ref={containerRef}
         sx={{ position: "absolute", top: 0, visibility: "hidden" }}
@@ -178,7 +178,7 @@ const FormattedText = function FormattedText({
                         fontSize: "2rem",
                         lineHeight: "1.5rem",
                         fontWeight: "unset",
-                        strokeWidth: 0,
+                        strokeWidth: variant === "outline" ? 6 : 0,
                       }}
                     />
                   </Box>
@@ -205,7 +205,7 @@ const FormattedContent = function FormattedContent({
   textRef,
   batchedLines,
   variant,
-  outputContainerId,
+  outputContainerId = "output",
 }: FormattedContentProps) {
   return (
     <Box pos="relative" id={outputContainerId}>
