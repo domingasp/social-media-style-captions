@@ -93,7 +93,7 @@ function CaptionCreator() {
         <VariantSelector value={variantValue} setValue={setVariantValue} />
       </Group>
 
-      <Box bg="gray" w="100%" sx={{ overflow: "scroll" }}>
+      <Box bg="gray" w="100%" sx={{ overflow: "hidden" }}>
         <FormattedText
           containerRef={containerRef}
           textRef={textRef}
