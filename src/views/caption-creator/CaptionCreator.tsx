@@ -96,6 +96,7 @@ function CaptionCreator() {
           containerRef={containerRef}
           textRef={textRef}
           batchedLines={batchedLines}
+          alignment={alignmentValue}
           variant={variantValue}
         />
       </Box>

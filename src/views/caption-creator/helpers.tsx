@@ -53,21 +53,22 @@ export const createOuterCurveDiv = function createOuterCurveDiv(
     topLeft = bottomLeft = radius;
     clipPath = "polygon(-1% 0%, 50% 0%, 50% 100%, -1% 100%)";
   }
-  if (radiusPos === "full-right") {
-    topRight = bottomRight = radius;
-    clipPath = "polygon(50% 0%, 101% 0%, 101% 100%, 50% 100%)";
-  }
   if (radiusPos === "top-left") {
     topLeft = radius;
     clipPath = "polygon(-1% 0%, 50% 0%, 50% 25%, -1% 25%)";
   }
-  if (radiusPos === "top-right") {
-    topRight = radius;
-    clipPath = "polygon(50% 0%, 101% 0%, 101% 25%, 50% 25%)";
-  }
   if (radiusPos === "bottom-left") {
     bottomLeft = radius;
     clipPath = "polygon(-1% 66%, 50% 66%, 50% 100%, -1% 100%)";
+  }
+
+  if (radiusPos === "full-right") {
+    topRight = bottomRight = radius;
+    clipPath = "polygon(50% 0%, 101% 0%, 101% 100%, 50% 100%)";
+  }
+  if (radiusPos === "top-right") {
+    topRight = radius;
+    clipPath = "polygon(50% 0%, 101% 0%, 101% 25%, 50% 25%)";
   }
   if (radiusPos === "bottom-right") {
     bottomRight = radius;
@@ -95,12 +96,15 @@ export const createOuterCurveDiv = function createOuterCurveDiv(
 export const getFullOuterRadius = function getFullOuterRadius(
   position: "top" | "bottom" | "full",
   radius: string,
-  color: string = "red"
+  color: string,
+  alignment: string
 ) {
   return (
     <>
-      {createOuterCurveDiv(`${position}-right`, "left", radius, color)}
-      {createOuterCurveDiv(`${position}-left`, "right", radius, color)}
+      {alignment !== "left" &&
+        createOuterCurveDiv(`${position}-right`, "left", radius, color)}
+      {alignment !== "right" &&
+        createOuterCurveDiv(`${position}-left`, "right", radius, color)}
     </>
   );
 };
@@ -240,7 +244,8 @@ export const getTextDivOuterCurves = function getTextDivOuterCurves(
   isLast: boolean,
   isShorter: IsShorter,
   radius: string,
-  color: string
+  color: string,
+  alignment: string
 ) {
   let outerCurves = <></>;
 
@@ -252,11 +257,11 @@ export const getTextDivOuterCurves = function getTextDivOuterCurves(
       ((isFirst && isShorter.thanAbove) || (isLast && isShorter.thanBelow)))
   ) {
     if (isShorter.thanAbove && isShorter.thanBelow) {
-      outerCurves = getFullOuterRadius("full", radius, color);
+      outerCurves = getFullOuterRadius("full", radius, color, alignment);
     } else if (isShorter.thanAbove) {
-      outerCurves = getFullOuterRadius("top", radius, color);
+      outerCurves = getFullOuterRadius("top", radius, color, alignment);
     } else if (isShorter.thanBelow) {
-      outerCurves = getFullOuterRadius("bottom", radius, color);
+      outerCurves = getFullOuterRadius("bottom", radius, color, alignment);
     }
   }
 

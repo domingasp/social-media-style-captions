@@ -8,6 +8,12 @@ import {
   longestStringInArray,
 } from "../views/caption-creator/helpers";
 
+const alignmentToAlign = function alignmentToAlign(alignment: string) {
+  if (alignment === "left") return "flex-start";
+  if (alignment === "right") return "flex-end";
+  return "center";
+};
+
 type FormattedWrapperProps = {
   children?: React.ReactNode;
 } & StackProps;
@@ -68,12 +74,14 @@ type FormattedTextBackgroundOnlyProps = {
   containerRef: React.RefObject<HTMLDivElement>;
   textRef: React.RefObject<HTMLDivElement>;
   batchedLines: string[][];
+  alignment: string;
   variant: string;
 };
 const FormattedTextBackgroundOnly = function FormattedTextBackgroundOnly({
   containerRef,
   textRef,
   batchedLines,
+  alignment = "center",
   variant = "plain",
 }: FormattedTextBackgroundOnlyProps) {
   const radius = "9px";
@@ -88,7 +96,10 @@ const FormattedTextBackgroundOnly = function FormattedTextBackgroundOnly({
   };
 
   return (
-    <FormattedWrapper opacity={variant === "transparent-bg" ? "50%" : "100%"}>
+    <FormattedWrapper
+      opacity={variant === "transparent-bg" ? "50%" : "100%"}
+      align={alignmentToAlign(alignment)}
+    >
       <TextWrapper
         ref={containerRef}
         sx={{ position: "absolute", top: 0, visibility: "hidden" }}
@@ -116,7 +127,8 @@ const FormattedTextBackgroundOnly = function FormattedTextBackgroundOnly({
               j === batch.length - 1,
               isShorter,
               radius,
-              getBackgroundColor(line)
+              getBackgroundColor(line),
+              alignment
             );
             const radii = getTextDivRadii(isShorter, radius);
 
@@ -146,14 +158,20 @@ const FormattedTextBackgroundOnly = function FormattedTextBackgroundOnly({
 
 type FormattedTextProps = {
   batchedLines: string[][];
+  alignment: string;
   variant: string;
 };
 const FormattedText = function FormattedText({
   batchedLines,
+  alignment = "center",
   variant = "plain",
 }: FormattedTextProps) {
   return (
-    <FormattedWrapper pos="absolute" top={0}>
+    <FormattedWrapper
+      pos="absolute"
+      top={0}
+      align={alignmentToAlign(alignment)}
+    >
       {batchedLines.map((batch, i) => (
         <Box key={i} sx={{ zIndex: 100 - i }}>
           {batch.map((line, j) => {
@@ -196,6 +214,7 @@ type FormattedContentProps = {
   containerRef: React.RefObject<HTMLDivElement>;
   textRef: React.RefObject<HTMLDivElement>;
   batchedLines: string[][];
+  alignment: string;
   variant: string;
   outputContainerId?: string;
 };
@@ -204,6 +223,7 @@ const FormattedContent = function FormattedContent({
   containerRef,
   textRef,
   batchedLines,
+  alignment,
   variant,
   outputContainerId = "output",
 }: FormattedContentProps) {
@@ -213,10 +233,15 @@ const FormattedContent = function FormattedContent({
         containerRef={containerRef}
         textRef={textRef}
         batchedLines={batchedLines}
+        alignment={alignment}
         variant={variant}
       />
 
-      <FormattedText batchedLines={batchedLines} variant={variant} />
+      <FormattedText
+        batchedLines={batchedLines}
+        alignment={alignment}
+        variant={variant}
+      />
     </Box>
   );
 };
