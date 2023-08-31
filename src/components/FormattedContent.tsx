@@ -187,7 +187,7 @@ const FormattedText = function FormattedText({
                 >
                   <FormattedTextAsDiv content={line} />
 
-                  <Box pos="absolute" top="-1px" left="0px" h="100%">
+                  <Box pos="absolute" top="-1px" left="0px" h="100%" w="100%">
                     <SVGText
                       content={line}
                       className="tiktok-classic-text"
