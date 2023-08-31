@@ -5,6 +5,29 @@ import {
   isTextShorterThanSurroundingText,
   longestStringInArray,
 } from "../views/caption-creator/helpers";
+import SVGText from "../services/SVGText";
+import { forwardRef } from "react";
+
+type FormattedTextAsDivProps = {
+  content: string;
+};
+const FormattedTextAsDiv = forwardRef<HTMLDivElement, FormattedTextAsDivProps>(
+  function FormattedTextAsDiv(props, ref) {
+    return (
+      <Text
+        className="tiktok-classic-text"
+        size="2rem"
+        sx={{
+          lineHeight: "1.5rem",
+          visibility: "hidden",
+        }}
+        ref={ref}
+      >
+        {props.content}
+      </Text>
+    );
+  }
+);
 
 type FormattedTextProps = {
   containerRef: React.RefObject<HTMLDivElement>;
@@ -33,16 +56,7 @@ const FormattedText = function FormattedText({
           opacity: "0%",
         }}
       >
-        <Text
-          className="tiktok-classic-text"
-          size="2rem"
-          ref={textRef}
-          sx={{
-            lineHeight: "1.75rem",
-          }}
-        >
-          For Width Measurements
-        </Text>
+        <FormattedTextAsDiv content={"For Measurements"} ref={textRef} />
       </Box>
 
       {batchedLines.map((batch, i) => (
@@ -86,15 +100,22 @@ const FormattedText = function FormattedText({
                 }}
               >
                 {line.length > 0 && outerCurves}
-                <Text
-                  className="tiktok-classic-text"
-                  size="2rem"
-                  sx={{
-                    lineHeight: "1.5rem",
-                  }}
-                >
-                  {line}
-                </Text>
+
+                <FormattedTextAsDiv content={line} />
+
+                <Box pos="absolute" top="-1px" left="0px" h="100%">
+                  <SVGText
+                    content={line}
+                    className="tiktok-classic-text"
+                    color="black"
+                    style={{
+                      fontSize: "2rem",
+                      lineHeight: "1.5rem",
+                      fontWeight: "unset",
+                      strokeWidth: 0,
+                    }}
+                  />
+                </Box>
               </Box>
             );
           })}
