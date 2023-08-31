@@ -32,14 +32,14 @@ const OptionText = function OptionText({ sx }: OptionTextProps) {
   );
 };
 
-type TextStyleSelectorProps = {
+type VariantSelectorProps = {
   value: string;
   setValue: React.Dispatch<SetStateAction<string>>;
 };
-const TextStyleSelector = function TextStyleSelector({
+const VariantSelector = function VariantSelector({
   value,
   setValue,
-}: TextStyleSelectorProps) {
+}: VariantSelectorProps) {
   const checkedColor = "#228BE6";
 
   const getHighlight = function getHighlight() {
@@ -142,4 +142,4 @@ const TextStyleSelector = function TextStyleSelector({
   );
 };
 
-export default TextStyleSelector;
+export default VariantSelector;

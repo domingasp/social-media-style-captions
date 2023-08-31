@@ -33,12 +33,14 @@ type FormattedTextProps = {
   containerRef: React.RefObject<HTMLDivElement>;
   textRef: React.RefObject<HTMLDivElement>;
   batchedLines: string[][];
+  variant: string;
   outputContainerId?: string;
 };
 const FormattedText = function FormattedText({
   containerRef,
   textRef,
   batchedLines,
+  variant = "plain",
   outputContainerId = "output",
 }: FormattedTextProps) {
   const radius = "9px";

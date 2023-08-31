@@ -4,13 +4,13 @@ import { createRef, useEffect, useState } from "react";
 import { batchLines } from "./helpers";
 import FileSaver from "file-saver";
 import { IconPhoto, IconPhotoCode } from "@tabler/icons-react";
-import TextStyleSelector from "../../components/TextStyleSelector";
 import FormattedText from "../../components/FormattedText";
+import VariantSelector from "../../components/VariantSelector";
 
 function CaptionCreator() {
   const [content, setContent] = useState("Text\nTesting");
   const [batchedLines, setBatchedLines] = useState<string[][]>([]);
-  const [styleValue, setStyleValue] = useState("plain");
+  const [variantValue, setVariantValue] = useState("plain");
 
   const containerRef = createRef<HTMLDivElement>();
   const textRef = createRef<HTMLDivElement>();
@@ -48,7 +48,7 @@ function CaptionCreator() {
         onChange={(event) => setContent(event.currentTarget.value)}
       />
 
-      <TextStyleSelector value={styleValue} setValue={setStyleValue} />
+      <VariantSelector value={variantValue} setValue={setVariantValue} />
 
       <Text size="lg" weight="bold">
         Result:
@@ -78,6 +78,7 @@ function CaptionCreator() {
         containerRef={containerRef}
         textRef={textRef}
         batchedLines={batchedLines}
+        variant={variantValue}
       />
     </Stack>
   );
