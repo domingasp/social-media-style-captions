@@ -84,11 +84,11 @@ const FormattedTextBackgroundOnly = function FormattedTextBackgroundOnly({
       return "transparent";
     }
 
-    return "red";
+    return "#ea4040";
   };
 
   return (
-    <FormattedWrapper opacity="50%">
+    <FormattedWrapper opacity="100%">
       <TextWrapper
         ref={containerRef}
         sx={{ position: "absolute", top: 0, visibility: "hidden" }}
@@ -173,7 +173,7 @@ const FormattedText = function FormattedText({
                     <SVGText
                       content={line}
                       className="tiktok-classic-text"
-                      color="black"
+                      color="white"
                       style={{
                         fontSize: "2rem",
                         lineHeight: "1.5rem",
