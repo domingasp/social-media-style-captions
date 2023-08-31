@@ -16,9 +16,15 @@ const SVGText = function SVGText({
   alignmentSetting = "center",
 }: SVGTextProps) {
   const getXPosFromAlignment = function getXPosFromAlignment() {
-    if (alignmentSetting === "left") return "18%";
-    if (alignmentSetting === "right") return "82%";
+    if (alignmentSetting === "left") return "0%";
+    if (alignmentSetting === "right") return "100%";
     return "50%";
+  };
+
+  const getTranslateFromAlignment = function getTranslateFromAlignment() {
+    if (alignmentSetting === "left") return "translateX(1rem)";
+    if (alignmentSetting === "right") return "translateX(-1rem)";
+    return "translateX(0)";
   };
 
   const getTextAnchorFromAlignment = function getTextAnchorFromAlignment() {
@@ -43,6 +49,7 @@ const SVGText = function SVGText({
           paintOrder: "stroke fill",
           textAnchor: getTextAnchorFromAlignment(),
           alignmentBaseline: "middle",
+          transform: getTranslateFromAlignment(),
           ...style,
         }}
       >
