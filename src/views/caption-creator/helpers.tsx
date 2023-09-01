@@ -255,6 +255,7 @@ export const getTextDivOuterCurves = function getTextDivOuterCurves(
   isLastBatch: boolean,
   isFirst: boolean,
   isLast: boolean,
+  isOnly: boolean,
   isShorter: IsShorter,
   radius: string,
   color: string,
@@ -269,9 +270,9 @@ export const getTextDivOuterCurves = function getTextDivOuterCurves(
       !isLastBatch &&
       ((isFirst && isShorter.thanAbove) || (isLast && isShorter.thanBelow)))
   ) {
-    if (isShorter.thanAbove && isShorter.thanBelow) {
+    if (isOnly && isShorter.thanAbove && isShorter.thanBelow) {
       outerCurves = getFullOuterRadius("full", radius, color, alignment);
-    } else if (isShorter.thanAbove) {
+    } else if (isFirst && isShorter.thanAbove) {
       outerCurves = getFullOuterRadius("top", radius, color, alignment);
     } else if (isShorter.thanBelow) {
       outerCurves = getFullOuterRadius("bottom", radius, color, alignment);

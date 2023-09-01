@@ -5,7 +5,8 @@ type SVGTextProps = {
   style?: React.CSSProperties | undefined;
   className?: string;
   alignmentSetting?: string;
-  containerWidth?: number;
+  batchContainerWidth?: number;
+  lineWidth?: number;
 };
 
 const SVGText = function SVGText({
@@ -15,23 +16,29 @@ const SVGText = function SVGText({
   style,
   className,
   alignmentSetting = "center",
-  containerWidth,
+  batchContainerWidth,
+  lineWidth,
 }: SVGTextProps) {
   const getXPosFromAlignment = function getXPosFromAlignment() {
-    if (alignmentSetting === "left") return 2;
-    if (alignmentSetting === "right") return (containerWidth ?? 0) - 2;
+    if (alignmentSetting === "left") return "0%";
+    if (alignmentSetting === "right")
+      return batchContainerWidth && lineWidth
+        ? batchContainerWidth - lineWidth
+        : "0%";
     return "50%";
   };
 
   const getTranslateFromAlignment = function getTranslateFromAlignment() {
-    if (alignmentSetting === "left") return "translateX(1rem)";
-    if (alignmentSetting === "right") return "translateX(-1rem)";
+    if (alignmentSetting === "left" || alignmentSetting === "right") {
+      return "translateX(1.1rem)";
+    }
     return "translateX(0)";
   };
 
   const getTextAnchorFromAlignment = function getTextAnchorFromAlignment() {
-    if (alignmentSetting === "left") return "start";
-    if (alignmentSetting === "right") return "end";
+    if (alignmentSetting === "left" || alignmentSetting === "right") {
+      return "start"; // using end for 'right' gave inconsistent alignment
+    }
     return "middle";
   };
 
@@ -42,8 +49,6 @@ const SVGText = function SVGText({
         x={getXPosFromAlignment()}
         y="55%"
         style={{
-          fontSize: "1.25rem",
-          fontWeight: "bold",
           fill: color,
           stroke: strokeColor,
           strokeWidth: "5px",

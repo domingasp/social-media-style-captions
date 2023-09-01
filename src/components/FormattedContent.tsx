@@ -125,6 +125,7 @@ const FormattedTextBackgroundOnly = function FormattedTextBackgroundOnly({
               i === batchedLines.length - 1,
               j === 0,
               j === batch.length - 1,
+              batch.length === 1,
               isShorter,
               radius,
               getBackgroundColor(line.label),
@@ -198,11 +199,13 @@ const FormattedText = function FormattedText({
                       className="tiktok-classic-text"
                       color="white"
                       alignmentSetting={alignment}
-                      containerWidth={Math.max(...batch.map((b) => b.width))}
+                      batchContainerWidth={Math.max(
+                        ...batch.map((b) => b.width)
+                      )}
+                      lineWidth={line.width}
                       style={{
                         fontSize: "2rem",
                         lineHeight: "1.5rem",
-                        fontWeight: "unset",
                         strokeWidth: variant === "outline" ? 6 : 0,
                       }}
                     />

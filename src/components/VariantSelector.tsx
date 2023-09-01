@@ -74,6 +74,10 @@ const VariantSelector = function VariantSelector({
                       content="A"
                       color="white"
                       strokeColor={checked ? checkedColor : "black"}
+                      style={{
+                        fontSize: "1.25rem",
+                        fontWeight: "bold",
+                      }}
                     />
                   </Box>
                 </OptionWrapper>
