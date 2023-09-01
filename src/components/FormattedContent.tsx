@@ -8,6 +8,7 @@ import {
   longestStringInArray,
 } from "../views/caption-creator/helpers";
 import { LabelWidth } from "../views/caption-creator/types/LabelWidth";
+import ColorInformation from "../views/caption-creator/types/ColorInformation";
 
 const alignmentToAlign = function alignmentToAlign(alignment: string) {
   if (alignment === "left") return "flex-start";
@@ -76,13 +77,15 @@ type BackgroundProps = {
   batchedLines: LabelWidth[][];
   alignment: string;
   variant: string;
+  colorInfo: ColorInformation;
 };
 const Background = function Background({
   containerRef,
   textRef,
   batchedLines,
-  alignment = "center",
-  variant = "plain",
+  alignment,
+  variant,
+  colorInfo,
 }: BackgroundProps) {
   const radius = "9px";
 
@@ -92,7 +95,7 @@ const Background = function Background({
       return "transparent";
     }
 
-    return "#ea4040";
+    return colorInfo.color;
   };
 
   return (
@@ -162,11 +165,13 @@ type FormattedTextProps = {
   batchedLines: LabelWidth[][];
   alignment: string;
   variant: string;
+  colorInfo: ColorInformation;
 };
 const FormattedText = function FormattedText({
   batchedLines,
-  alignment = "center",
-  variant = "plain",
+  alignment,
+  variant,
+  colorInfo,
 }: FormattedTextProps) {
   return (
     <FormattedWrapper
@@ -198,7 +203,14 @@ const FormattedText = function FormattedText({
                     <SVGText
                       content={line.label}
                       className="tiktok-classic-text"
-                      color="white"
+                      color={
+                        variant === "plain" || variant === "outline"
+                          ? colorInfo.color
+                          : colorInfo.color === "#FFFFFF" &&
+                            variant === "opaque-bg"
+                          ? "#000000"
+                          : "#FFFFFF"
+                      }
                       alignmentSetting={alignment}
                       batchContainerWidth={Math.max(
                         ...batch.map((b) => b.width)
@@ -207,6 +219,7 @@ const FormattedText = function FormattedText({
                       style={{
                         fontSize: "2rem",
                         lineHeight: "1.5rem",
+                        stroke: colorInfo.outlineColor,
                         strokeWidth: variant === "outline" ? 6 : 0,
                       }}
                     />
@@ -227,6 +240,7 @@ type FormattedContentProps = {
   batchedLines: LabelWidth[][];
   alignment: string;
   variant: string;
+  colorInfo: ColorInformation;
   outputContainerId?: string;
 };
 
@@ -236,6 +250,7 @@ const FormattedContent = function FormattedContent({
   batchedLines,
   alignment,
   variant,
+  colorInfo,
   outputContainerId = "output",
 }: FormattedContentProps) {
   return (
@@ -246,12 +261,14 @@ const FormattedContent = function FormattedContent({
         batchedLines={batchedLines}
         alignment={alignment}
         variant={variant}
+        colorInfo={colorInfo}
       />
 
       <FormattedText
         batchedLines={batchedLines}
         alignment={alignment}
         variant={variant}
+        colorInfo={colorInfo}
       />
     </Box>
   );

@@ -137,6 +137,7 @@ function CaptionCreator() {
           batchedLines={batchedLines}
           alignment={alignmentValue}
           variant={variantValue}
+          colorInfo={colorValue}
         />
       </Box>
     </Stack>
