@@ -23,7 +23,7 @@ function CaptionCreator() {
   const [content, setContent] = useState("Text\nTesting");
   const [batchedLines, setBatchedLines] = useState<LabelWidth[][]>([]);
 
-  const [lineLimit, setLineLimit] = useState<number | "">(20);
+  const [lineLimit, setLineLimit] = useState<number | "">(25);
   const [variantValue, setVariantValue] = useState("opaque-bg");
   const [alignmentValue, setAlignmentValue] = useState("center");
 
