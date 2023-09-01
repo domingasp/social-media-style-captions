@@ -70,20 +70,20 @@ const FormattedTextAsDiv = forwardRef<HTMLDivElement, FormattedTextAsDivProps>(
   }
 );
 
-type FormattedTextBackgroundOnlyProps = {
+type BackgroundProps = {
   containerRef: React.RefObject<HTMLDivElement>;
   textRef: React.RefObject<HTMLDivElement>;
   batchedLines: LabelWidth[][];
   alignment: string;
   variant: string;
 };
-const FormattedTextBackgroundOnly = function FormattedTextBackgroundOnly({
+const Background = function Background({
   containerRef,
   textRef,
   batchedLines,
   alignment = "center",
   variant = "plain",
-}: FormattedTextBackgroundOnlyProps) {
+}: BackgroundProps) {
   const radius = "9px";
 
   const getBackgroundColor = function getBackgroundColor(line: string) {
@@ -135,6 +135,7 @@ const FormattedTextBackgroundOnly = function FormattedTextBackgroundOnly({
 
             return (
               <TextWrapper
+                key={j}
                 sx={{
                   position: "relative",
                   backgroundColor: getBackgroundColor(line.label),
@@ -239,7 +240,7 @@ const FormattedContent = function FormattedContent({
 }: FormattedContentProps) {
   return (
     <Box pos="relative" id={outputContainerId}>
-      <FormattedTextBackgroundOnly
+      <Background
         containerRef={containerRef}
         textRef={textRef}
         batchedLines={batchedLines}

@@ -18,6 +18,8 @@ import FormattedText from "../../components/FormattedContent";
 import VariantSelector from "../../components/VariantSelector";
 import AlignmentSelector from "../../components/AlignmentSelector";
 import { LabelWidth } from "./types/LabelWidth";
+import ColorSwatchSelector from "../../components/ColorSwatchSelector";
+import ColorInformation from "./types/ColorInformation";
 
 function CaptionCreator() {
   const [content, setContent] = useState("Text\nTesting");
@@ -26,6 +28,10 @@ function CaptionCreator() {
   const [lineLimit, setLineLimit] = useState<number | "">(25);
   const [variantValue, setVariantValue] = useState("opaque-bg");
   const [alignmentValue, setAlignmentValue] = useState("center");
+  const [colorValue, setColorValue] = useState<ColorInformation>({
+    color: "#FFFFFF",
+    outlineColor: "#000000",
+  });
 
   const containerRef = createRef<HTMLDivElement>();
   const textRef = createRef<HTMLDivElement>();
@@ -121,6 +127,8 @@ function CaptionCreator() {
 
         <VariantSelector value={variantValue} setValue={setVariantValue} />
       </Group>
+
+      <ColorSwatchSelector value={colorValue} setValue={setColorValue} />
 
       <Box bg="gray" w="100%" sx={{ overflow: "hidden" }}>
         <FormattedText
