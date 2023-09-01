@@ -1,4 +1,5 @@
 import {
+  BackgroundImage,
   Box,
   Button,
   Card,
@@ -130,16 +131,21 @@ function CaptionCreator() {
 
       <ColorSwatchSelector value={colorValue} setValue={setColorValue} />
 
-      <Box bg="gray" w="100%" sx={{ overflow: "hidden" }}>
-        <FormattedText
-          containerRef={containerRef}
-          textRef={textRef}
-          batchedLines={batchedLines}
-          alignment={alignmentValue}
-          variant={variantValue}
-          colorInfo={colorValue}
-        />
-      </Box>
+      <BackgroundImage
+        radius="md"
+        src="https://cdn.pixabay.com/photo/2023/03/06/17/02/ship-7833921_1280.jpg"
+      >
+        <Box w="100%" sx={{ overflow: "hidden" }}>
+          <FormattedText
+            containerRef={containerRef}
+            textRef={textRef}
+            batchedLines={batchedLines}
+            alignment={alignmentValue}
+            variant={variantValue}
+            colorInfo={colorValue}
+          />
+        </Box>
+      </BackgroundImage>
     </Stack>
   );
 }
