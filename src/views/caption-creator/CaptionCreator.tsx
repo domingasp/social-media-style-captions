@@ -14,7 +14,7 @@ import { toPng, toSvg } from "html-to-image";
 import { createRef, useEffect, useState } from "react";
 import { batchLines } from "./helpers";
 import FileSaver from "file-saver";
-import { IconPhoto, IconPhotoCode } from "@tabler/icons-react";
+import { IconPhoto, IconPhotoCode, IconX } from "@tabler/icons-react";
 import FormattedText from "../../components/FormattedContent";
 import VariantSelector from "../../components/VariantSelector";
 import AlignmentSelector from "../../components/AlignmentSelector";
@@ -22,6 +22,7 @@ import { LabelWidth } from "./types/LabelWidth";
 import ColorSwatchSelector from "../../components/ColorSwatchSelector";
 import ColorInformation from "./types/ColorInformation";
 import ImageDropzone from "../../components/ImageDropzone";
+import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 
 function CaptionCreator() {
   const [content, setContent] = useState("Text\nTesting");
@@ -132,13 +133,6 @@ function CaptionCreator() {
           </Group>
 
           <ColorSwatchSelector value={colorValue} setValue={setColorValue} />
-
-          <Divider w="100%" my="md" />
-
-          <ImageDropzone
-            hasImage={customImageFile !== null}
-            setCustomImageFile={setCustomImageFile}
-          />
         </Stack>
       </Stack>
 
@@ -174,24 +168,51 @@ function CaptionCreator() {
           </Group>
         </Group>
 
-        <BackgroundImage
-          radius="md"
-          src={
-            customImageDataUrl !== null && customImageDataUrl.length > 0
-              ? customImageDataUrl
-              : "https://images.unsplash.com/photo-1693057205719-e439be478b33?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2158&q=80"
-          }
-          sx={{ textAlign: "center", overflow: "hidden" }}
+        <Dropzone
+          onDrop={(files) => {
+            if (files.length > 0) {
+              setCustomImageFile(files[0]);
+            }
+          }}
+          accept={IMAGE_MIME_TYPE}
+          maxSize={3 * 1024 ** 2}
+          w="100%"
+          padding={0}
+          sx={{
+            border: 0,
+          }}
         >
-          <FormattedText
-            containerRef={containerRef}
-            textRef={textRef}
-            batchedLines={batchedLines}
-            alignment={alignmentValue}
-            variant={variantValue}
-            colorInfo={colorValue}
-          />
-        </BackgroundImage>
+          <BackgroundImage
+            radius="md"
+            src={
+              customImageDataUrl !== null && customImageDataUrl.length > 0
+                ? customImageDataUrl
+                : "https://images.unsplash.com/photo-1693057205719-e439be478b33?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2158&q=80"
+            }
+            sx={{ textAlign: "center", overflow: "hidden" }}
+          >
+            <FormattedText
+              containerRef={containerRef}
+              textRef={textRef}
+              batchedLines={batchedLines}
+              alignment={alignmentValue}
+              variant={variantValue}
+              colorInfo={colorValue}
+            />
+          </BackgroundImage>
+        </Dropzone>
+
+        <Button
+          disabled={customImageFile === null}
+          onClick={() => setCustomImageFile(null)}
+          size="sm"
+          variant="subtle"
+          color="red"
+          leftIcon={<IconX />}
+          sx={{ alignSelf: "flex-end" }}
+        >
+          Clear Image
+        </Button>
       </Stack>
     </Group>
   );
