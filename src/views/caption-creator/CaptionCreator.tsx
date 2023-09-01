@@ -2,7 +2,6 @@ import {
   BackgroundImage,
   Button,
   Card,
-  Divider,
   Group,
   NumberInput,
   Stack,
@@ -21,7 +20,6 @@ import AlignmentSelector from "../../components/AlignmentSelector";
 import { LabelWidth } from "./types/LabelWidth";
 import ColorSwatchSelector from "../../components/ColorSwatchSelector";
 import ColorInformation from "./types/ColorInformation";
-import ImageDropzone from "../../components/ImageDropzone";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 
 function CaptionCreator() {
