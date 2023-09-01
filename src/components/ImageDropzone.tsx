@@ -23,12 +23,10 @@ const ImageDropzone = function ImageDropzone({
       >
         <Group>
           <Dropzone.Idle>
-            <IconPhoto size="2rem" stroke={1.5} />
+            <IconPhoto size="1.5rem" stroke={1.5} />
           </Dropzone.Idle>
 
-          <Text size="md" maw="150px">
-            Drag Image here or click for file picker
-          </Text>
+          <Text size="md">Drag Image here or click for file picker</Text>
         </Group>
       </Dropzone>
       <Button

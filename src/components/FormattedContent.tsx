@@ -254,7 +254,7 @@ const FormattedContent = function FormattedContent({
   outputContainerId = "output",
 }: FormattedContentProps) {
   return (
-    <Box pos="relative" id={outputContainerId}>
+    <Box pos="relative" display="inline-block" id={outputContainerId}>
       <Background
         containerRef={containerRef}
         textRef={textRef}
