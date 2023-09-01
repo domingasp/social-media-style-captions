@@ -54,7 +54,7 @@ const ColorSwatchSelector = function ColorSwatchSelector({
                   ".mantine-ColorSwatch-children": { top: 1, right: 1 },
                 }}
               >
-                {checked && <IconCheck />}
+                {checked && <IconCheck stroke={4} />}
               </ColorSwatch>
             )}
           </RadioGroup.Option>

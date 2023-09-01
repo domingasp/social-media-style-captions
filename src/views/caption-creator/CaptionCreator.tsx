@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Card,
+  FileButton,
   Group,
   NumberInput,
   Stack,
@@ -21,10 +22,16 @@ import AlignmentSelector from "../../components/AlignmentSelector";
 import { LabelWidth } from "./types/LabelWidth";
 import ColorSwatchSelector from "../../components/ColorSwatchSelector";
 import ColorInformation from "./types/ColorInformation";
+import ImageDropzone from "../../components/ImageDropzone";
 
 function CaptionCreator() {
   const [content, setContent] = useState("Text\nTesting");
   const [batchedLines, setBatchedLines] = useState<LabelWidth[][]>([]);
+
+  const [customImageFile, setCustomImageFile] = useState<File | null>(null);
+  const [customImageDataUrl, setCustomImageDataUrl] = useState<string | null>(
+    ""
+  );
 
   const [lineLimit, setLineLimit] = useState<number | "">(25);
   const [variantValue, setVariantValue] = useState("opaque-bg");
@@ -56,11 +63,31 @@ function CaptionCreator() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [content, lineLimit]);
 
+  useEffect(() => {
+    const fileReader = new FileReader();
+
+    fileReader.addEventListener("load", () => {
+      setCustomImageDataUrl(fileReader.result as string | null);
+    });
+
+    if (customImageFile !== null) {
+      fileReader.readAsDataURL(customImageFile);
+    } else {
+      setCustomImageDataUrl(null);
+    }
+  }, [customImageFile]);
+
   const saveToFile = async function saveToFile(type: "png" | "svg") {
     const node = document.getElementById("output");
 
     const dataUrl = type === "png" ? await toPng(node!) : await toSvg(node!);
-    FileSaver.saveAs(dataUrl, batchedLines.flat(1).join("-"));
+    FileSaver.saveAs(
+      dataUrl,
+      batchedLines
+        .flat(1)
+        .map((x) => x.label)
+        .join("-")
+    );
   };
 
   return (
@@ -76,9 +103,14 @@ function CaptionCreator() {
       />
 
       <Group w="100%" position="apart">
-        <Text size="lg" weight="bold">
-          Result
-        </Text>
+        <Group>
+          <Text size="lg" weight="bold">
+            Result
+          </Text>
+          <Text size="xs" color="grey">
+            Image for preview only
+          </Text>
+        </Group>
 
         <Group>
           <Text>Save:</Text>
@@ -131,21 +163,34 @@ function CaptionCreator() {
 
       <ColorSwatchSelector value={colorValue} setValue={setColorValue} />
 
-      <BackgroundImage
-        radius="md"
-        src="https://cdn.pixabay.com/photo/2023/03/06/17/02/ship-7833921_1280.jpg"
-      >
-        <Box w="100%" sx={{ overflow: "hidden" }}>
-          <FormattedText
-            containerRef={containerRef}
-            textRef={textRef}
-            batchedLines={batchedLines}
-            alignment={alignmentValue}
-            variant={variantValue}
-            colorInfo={colorValue}
-          />
-        </Box>
-      </BackgroundImage>
+      <Group w="100%" align="flex-start">
+        <ImageDropzone
+          hasImage={customImageFile !== null}
+          setCustomImageFile={setCustomImageFile}
+        />
+
+        <BackgroundImage
+          w="100%"
+          radius="md"
+          src={
+            customImageDataUrl !== null && customImageDataUrl.length > 0
+              ? customImageDataUrl
+              : "https://images.unsplash.com/photo-1693057205719-e439be478b33?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2158&q=80"
+          }
+          sx={{ flex: 1 }}
+        >
+          <Box sx={{ overflow: "hidden" }}>
+            <FormattedText
+              containerRef={containerRef}
+              textRef={textRef}
+              batchedLines={batchedLines}
+              alignment={alignmentValue}
+              variant={variantValue}
+              colorInfo={colorValue}
+            />
+          </Box>
+        </BackgroundImage>
+      </Group>
     </Stack>
   );
 }
