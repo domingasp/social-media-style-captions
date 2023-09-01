@@ -7,6 +7,7 @@ import {
   isTextShorterThanSurroundingText,
   longestStringInArray,
 } from "../views/caption-creator/helpers";
+import { LabelWidth } from "../views/caption-creator/types/LabelWidth";
 
 const alignmentToAlign = function alignmentToAlign(alignment: string) {
   if (alignment === "left") return "flex-start";
@@ -72,7 +73,7 @@ const FormattedTextAsDiv = forwardRef<HTMLDivElement, FormattedTextAsDivProps>(
 type FormattedTextBackgroundOnlyProps = {
   containerRef: React.RefObject<HTMLDivElement>;
   textRef: React.RefObject<HTMLDivElement>;
-  batchedLines: string[][];
+  batchedLines: LabelWidth[][];
   alignment: string;
   variant: string;
 };
@@ -110,12 +111,12 @@ const FormattedTextBackgroundOnly = function FormattedTextBackgroundOnly({
         <Box key={i} sx={{ zIndex: 100 - i }}>
           {batch.map((line, j) => {
             const isShorter = isTextShorterThanSurroundingText(
-              longestStringInArray(batchedLines[i]),
+              longestStringInArray(batchedLines[i]).label,
               batchedLines[i - 1] && batchedLines[i - 1].length > 0
-                ? longestStringInArray(batchedLines[i - 1])
+                ? longestStringInArray(batchedLines[i - 1]).label
                 : undefined,
               batchedLines[i + 1] && batchedLines[i + 1].length > 0
-                ? longestStringInArray(batchedLines[i + 1])
+                ? longestStringInArray(batchedLines[i + 1]).label
                 : undefined
             );
 
@@ -126,7 +127,7 @@ const FormattedTextBackgroundOnly = function FormattedTextBackgroundOnly({
               j === batch.length - 1,
               isShorter,
               radius,
-              getBackgroundColor(line),
+              getBackgroundColor(line.label),
               alignment
             );
             const radii = getTextDivRadii(isShorter, radius);
@@ -135,16 +136,16 @@ const FormattedTextBackgroundOnly = function FormattedTextBackgroundOnly({
               <TextWrapper
                 sx={{
                   position: "relative",
-                  backgroundColor: getBackgroundColor(line),
-                  marginTop: line.length === 0 ? "8px" : "-0.88rem",
+                  backgroundColor: getBackgroundColor(line.label),
+                  marginTop: line.label.length === 0 ? "8px" : "-0.88rem",
                   borderRadius: `${radii.topLeft} ${radii.topRight} ${radii.bottomRight} ${radii.bottomLeft}`,
                   width: "100%",
                   zIndex: 100 - j,
                 }}
               >
-                {line.length > 0 && outerCurves}
+                {line.label.length > 0 && outerCurves}
 
-                <FormattedTextAsDiv content={line} />
+                <FormattedTextAsDiv content={line.label} />
               </TextWrapper>
               //
             );
@@ -156,7 +157,7 @@ const FormattedTextBackgroundOnly = function FormattedTextBackgroundOnly({
 };
 
 type FormattedTextProps = {
-  batchedLines: string[][];
+  batchedLines: LabelWidth[][];
   alignment: string;
   variant: string;
 };
@@ -186,17 +187,18 @@ const FormattedText = function FormattedText({
                     position: "relative",
                     width: "100%",
                     zIndex: 100 - j,
-                    marginTop: line.length === 0 ? "8px" : "-0.88rem",
+                    marginTop: line.label.length === 0 ? "8px" : "-0.88rem",
                   }}
                 >
-                  <FormattedTextAsDiv content={line} />
+                  <FormattedTextAsDiv content={line.label} />
 
                   <Box pos="absolute" top="-1px" left="0px" h="100%" w="100%">
                     <SVGText
-                      content={line}
+                      content={line.label}
                       className="tiktok-classic-text"
                       color="white"
                       alignmentSetting={alignment}
+                      containerWidth={Math.max(...batch.map((b) => b.width))}
                       style={{
                         fontSize: "2rem",
                         lineHeight: "1.5rem",
@@ -218,7 +220,7 @@ const FormattedText = function FormattedText({
 type FormattedContentProps = {
   containerRef: React.RefObject<HTMLDivElement>;
   textRef: React.RefObject<HTMLDivElement>;
-  batchedLines: string[][];
+  batchedLines: LabelWidth[][];
   alignment: string;
   variant: string;
   outputContainerId?: string;

@@ -196,13 +196,13 @@ export const batchLines = function batchLines(
     }
   }
 
-  return batched.map((x) => x.map((y) => y.label));
+  return batched;
 };
 
 export const longestStringInArray = function longestStringInArray(
-  arr: string[]
+  arr: LabelWidth[]
 ) {
-  return arr.reduce((a, b) => (a.length > b.length ? a : b));
+  return arr.reduce((a, b) => (a.label.length > b.label.length ? a : b));
 };
 
 export const isTextShorterThanSurroundingText =

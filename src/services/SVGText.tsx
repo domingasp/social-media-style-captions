@@ -5,6 +5,7 @@ type SVGTextProps = {
   style?: React.CSSProperties | undefined;
   className?: string;
   alignmentSetting?: string;
+  containerWidth?: number;
 };
 
 const SVGText = function SVGText({
@@ -14,10 +15,11 @@ const SVGText = function SVGText({
   style,
   className,
   alignmentSetting = "center",
+  containerWidth,
 }: SVGTextProps) {
   const getXPosFromAlignment = function getXPosFromAlignment() {
-    if (alignmentSetting === "left") return "0%";
-    if (alignmentSetting === "right") return "100%";
+    if (alignmentSetting === "left") return 2;
+    if (alignmentSetting === "right") return (containerWidth ?? 0) - 2;
     return "50%";
   };
 

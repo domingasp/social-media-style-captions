@@ -17,10 +17,11 @@ import { IconPhoto, IconPhotoCode } from "@tabler/icons-react";
 import FormattedText from "../../components/FormattedContent";
 import VariantSelector from "../../components/VariantSelector";
 import AlignmentSelector from "../../components/AlignmentSelector";
+import { LabelWidth } from "./types/LabelWidth";
 
 function CaptionCreator() {
   const [content, setContent] = useState("Text\nTesting");
-  const [batchedLines, setBatchedLines] = useState<string[][]>([]);
+  const [batchedLines, setBatchedLines] = useState<LabelWidth[][]>([]);
 
   const [lineLimit, setLineLimit] = useState<number | "">(20);
   const [variantValue, setVariantValue] = useState("opaque-bg");
