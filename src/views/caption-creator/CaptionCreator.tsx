@@ -1,5 +1,6 @@
 import {
   BackgroundImage,
+  Box,
   Button,
   Card,
   Group,
@@ -166,51 +167,67 @@ function CaptionCreator() {
           </Group>
         </Group>
 
-        <Dropzone
-          onDrop={(files) => {
-            if (files.length > 0) {
-              setCustomImageFile(files[0]);
-            }
-          }}
-          accept={IMAGE_MIME_TYPE}
-          maxSize={3 * 1024 ** 2}
-          w="100%"
-          padding={0}
-          sx={{
-            border: 0,
-          }}
-        >
-          <BackgroundImage
+        <Box w="100%" pos="relative">
+          <Dropzone
+            onDrop={(files) => {
+              if (files.length > 0) {
+                setCustomImageFile(files[0]);
+              }
+            }}
+            accept={IMAGE_MIME_TYPE}
+            maxSize={3 * 1024 ** 2}
+            w="100%"
+            padding={0}
             radius="md"
-            src={
-              customImageDataUrl !== null && customImageDataUrl.length > 0
-                ? customImageDataUrl
-                : "https://images.unsplash.com/photo-1693057205719-e439be478b33?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2158&q=80"
-            }
-            sx={{ textAlign: "center", overflow: "hidden" }}
+            bg={colorValue.color === "#FFFFFF" ? "#DEE2E6" : "transparent"}
+            sx={{
+              borderWidth: customImageDataUrl !== null ? 0 : "",
+            }}
           >
-            <FormattedText
-              containerRef={containerRef}
-              textRef={textRef}
-              batchedLines={batchedLines}
-              alignment={alignmentValue}
-              variant={variantValue}
-              colorInfo={colorValue}
-            />
-          </BackgroundImage>
-        </Dropzone>
+            <BackgroundImage
+              radius="md"
+              src={customImageDataUrl !== null ? customImageDataUrl : ""}
+              sx={{ textAlign: "center", overflow: "hidden" }}
+            >
+              <FormattedText
+                containerRef={containerRef}
+                textRef={textRef}
+                batchedLines={batchedLines}
+                alignment={alignmentValue}
+                variant={variantValue}
+                colorInfo={colorValue}
+              />
+            </BackgroundImage>
+          </Dropzone>
+          {customImageFile === null && (
+            <Text
+              pos="absolute"
+              top={6}
+              left={12}
+              maw="200px"
+              size="sm"
+              color="grey"
+              sx={{ pointerEvents: "none" }}
+            >
+              Drag image here or click for file picker
+            </Text>
+          )}
 
-        <Button
-          disabled={customImageFile === null}
-          onClick={() => setCustomImageFile(null)}
-          size="sm"
-          variant="subtle"
-          color="red"
-          leftIcon={<IconX />}
-          sx={{ alignSelf: "flex-end" }}
-        >
-          Clear Image
-        </Button>
+          {customImageFile !== null && (
+            <Button
+              onClick={() => setCustomImageFile(null)}
+              size="xs"
+              variant="white"
+              color="red"
+              leftIcon={<IconX />}
+              pos="absolute"
+              bottom={6}
+              right={6}
+            >
+              Clear Image
+            </Button>
+          )}
+        </Box>
       </Stack>
     </Group>
   );
