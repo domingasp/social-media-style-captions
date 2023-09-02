@@ -181,7 +181,7 @@ function CaptionCreator() {
             radius="md"
             bg={colorValue.color === "#FFFFFF" ? "#DEE2E6" : "transparent"}
             sx={{
-              borderWidth: customImageDataUrl !== null ? 0 : "",
+              borderColor: customImageDataUrl !== null ? "transparent" : "",
             }}
           >
             <BackgroundImage
@@ -202,10 +202,9 @@ function CaptionCreator() {
           {customImageFile === null && (
             <Text
               pos="absolute"
-              top={6}
+              top={2}
               left={12}
-              maw="200px"
-              size="sm"
+              size="xs"
               color="grey"
               sx={{ pointerEvents: "none" }}
             >
@@ -221,7 +220,7 @@ function CaptionCreator() {
               color="red"
               leftIcon={<IconX />}
               pos="absolute"
-              bottom={6}
+              bottom={3}
               right={6}
             >
               Clear Image
