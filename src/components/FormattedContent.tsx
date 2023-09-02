@@ -254,22 +254,24 @@ const FormattedContent = function FormattedContent({
   outputContainerId = "output",
 }: FormattedContentProps) {
   return (
-    <Box pos="relative" display="inline-block" id={outputContainerId}>
-      <Background
-        containerRef={containerRef}
-        textRef={textRef}
-        batchedLines={batchedLines}
-        alignment={alignment}
-        variant={variant}
-        colorInfo={colorInfo}
-      />
+    <Box mt={8}>
+      <Box pos="relative" display="inline-block" id={outputContainerId}>
+        <Background
+          containerRef={containerRef}
+          textRef={textRef}
+          batchedLines={batchedLines}
+          alignment={alignment}
+          variant={variant}
+          colorInfo={colorInfo}
+        />
 
-      <FormattedText
-        batchedLines={batchedLines}
-        alignment={alignment}
-        variant={variant}
-        colorInfo={colorInfo}
-      />
+        <FormattedText
+          batchedLines={batchedLines}
+          alignment={alignment}
+          variant={variant}
+          colorInfo={colorInfo}
+        />
+      </Box>
     </Box>
   );
 };

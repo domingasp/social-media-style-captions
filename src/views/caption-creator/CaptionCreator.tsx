@@ -202,7 +202,7 @@ function CaptionCreator() {
           {customImageFile === null && (
             <Text
               pos="absolute"
-              top={2}
+              top={4}
               left={12}
               size="xs"
               color="grey"
