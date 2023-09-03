@@ -152,7 +152,6 @@ const Background = function Background({
 
                 <FormattedTextAsDiv content={line.label} />
               </TextWrapper>
-              //
             );
           })}
         </Box>
@@ -216,6 +215,7 @@ const FormattedText = function FormattedText({
                         ...batch.map((b) => b.width)
                       )}
                       lineWidth={line.width}
+                      yPos="70%"
                       style={{
                         fontSize: "2rem",
                         lineHeight: "1.5rem",

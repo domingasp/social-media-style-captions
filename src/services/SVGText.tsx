@@ -7,6 +7,7 @@ type SVGTextProps = {
   alignmentSetting?: string;
   batchContainerWidth?: number;
   lineWidth?: number;
+  yPos?: string;
 };
 
 const SVGText = function SVGText({
@@ -18,6 +19,7 @@ const SVGText = function SVGText({
   alignmentSetting = "center",
   batchContainerWidth,
   lineWidth,
+  yPos = "80%",
 }: SVGTextProps) {
   const getXPosFromAlignment = function getXPosFromAlignment() {
     if (alignmentSetting === "left") return "0%";
@@ -47,7 +49,7 @@ const SVGText = function SVGText({
       <text
         className={className}
         x={getXPosFromAlignment()}
-        y="55%"
+        y={yPos}
         style={{
           fill: color,
           stroke: strokeColor,
