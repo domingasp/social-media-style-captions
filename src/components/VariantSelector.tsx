@@ -71,7 +71,7 @@ const VariantSelector = function VariantSelector({
                     strokeColor={checked ? checkedColor : "black"}
                     svgParentStyle={{
                       position: "absolute",
-                      top: 1,
+                      top: 1.44,
                       left: 0.25,
                     }}
                     style={{
