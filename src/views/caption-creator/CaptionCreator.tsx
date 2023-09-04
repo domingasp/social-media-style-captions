@@ -18,14 +18,14 @@ import { IconPhoto, IconPhotoCode, IconX } from "@tabler/icons-react";
 import FormattedText from "../../components/FormattedContent";
 import VariantSelector from "../../components/VariantSelector";
 import AlignmentSelector from "../../components/AlignmentSelector";
-import { LabelWidth } from "./types/LabelWidth";
 import ColorSwatchSelector from "../../components/ColorSwatchSelector";
 import ColorInformation from "./types/ColorInformation";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
+import Batch from "./types/Batch";
 
 function CaptionCreator() {
   const [content, setContent] = useState("Text\nTesting");
-  const [batchedLines, setBatchedLines] = useState<LabelWidth[][]>([]);
+  const [batches, setBatches] = useState<Batch[]>([]);
 
   const [customImageFile, setCustomImageFile] = useState<File | null>(null);
   const [customImageDataUrl, setCustomImageDataUrl] = useState<string | null>(
@@ -47,7 +47,7 @@ function CaptionCreator() {
     const contentSplit = content.split("\n");
 
     if (containerRef.current !== null && textRef.current !== null) {
-      setBatchedLines(
+      setBatches(
         batchLines(
           contentSplit,
           containerRef.current!,
@@ -56,7 +56,7 @@ function CaptionCreator() {
         )
       );
     } else {
-      setBatchedLines([]);
+      setBatches([]);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -80,13 +80,7 @@ function CaptionCreator() {
     const node = document.getElementById("output");
 
     const dataUrl = type === "png" ? await toPng(node!) : await toSvg(node!);
-    FileSaver.saveAs(
-      dataUrl,
-      batchedLines
-        .flat(1)
-        .map((x) => x.label)
-        .join("-")
-    );
+    FileSaver.saveAs(dataUrl, batches.map((x) => x.labels).join("-"));
   };
 
   return (
@@ -192,7 +186,7 @@ function CaptionCreator() {
               <FormattedText
                 containerRef={containerRef}
                 textRef={textRef}
-                batchedLines={batchedLines}
+                batches={batches}
                 alignment={alignmentValue}
                 variant={variantValue}
                 colorInfo={colorValue}

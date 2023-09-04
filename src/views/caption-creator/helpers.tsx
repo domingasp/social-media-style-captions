@@ -1,6 +1,6 @@
-import { Box } from "@mantine/core";
+import Batch from "./types/Batch";
 import IsShorter from "./types/IsShorter";
-import { LabelWidth } from "./types/LabelWidth";
+import { LabelDimensions } from "./types/LabelWidth";
 
 const getTextWidthOnCanvas = function getTextOnWidth(text: string) {
   const canvas: HTMLCanvasElement = document.createElement("canvas");
@@ -17,18 +17,18 @@ export const isShorter = function isShorter(
   return getTextWidthOnCanvas(text) < getTextWidthOnCanvas(textToCompare);
 };
 
-export const getTextWidthInDiv = function getTextWidthInDiv(
+export const getLabelDimensionsInDiv = function getLabelDimensionsInDiv(
   wrapperDiv: HTMLDivElement,
   textDiv: HTMLDivElement,
   text: string
 ) {
   if (textDiv) {
     textDiv.innerText = text;
-    const textSize = wrapperDiv.getBoundingClientRect().width;
+    const labelDimensions = wrapperDiv.getBoundingClientRect();
 
-    return textSize ?? 0;
+    return { width: labelDimensions.width, height: labelDimensions.height };
   }
-  return 0;
+  return { width: 0, height: 0 };
 };
 
 export const differenceInWidth = function differenceInWidth(
@@ -38,79 +38,8 @@ export const differenceInWidth = function differenceInWidth(
   return Math.abs(a - b);
 };
 
-export const createOuterCurveDiv = function createOuterCurveDiv(
-  radiusPos: string = "full-left",
-  position: "left" | "right" = "left",
-  radius: string,
-  color: string
-) {
-  let topLeft, topRight, bottomLeft, bottomRight;
-  topLeft = topRight = bottomLeft = bottomRight = "0px";
-
-  let clipPath = "";
-
-  if (radiusPos === "full-left") {
-    topLeft = bottomLeft = radius;
-    clipPath = "polygon(-1% 0%, 50% 0%, 50% 100%, -1% 100%)";
-  }
-  if (radiusPos === "top-left") {
-    topLeft = radius;
-    clipPath = "polygon(-1% 0%, 50% 0%, 50% 25%, -1% 25%)";
-  }
-  if (radiusPos === "bottom-left") {
-    bottomLeft = radius;
-    clipPath = "polygon(-1% 66%, 50% 66%, 50% 100%, -1% 100%)";
-  }
-
-  if (radiusPos === "full-right") {
-    topRight = bottomRight = radius;
-    clipPath = "polygon(50% 0%, 101% 0%, 101% 100%, 50% 100%)";
-  }
-  if (radiusPos === "top-right") {
-    topRight = radius;
-    clipPath = "polygon(50% 0%, 101% 0%, 101% 25%, 50% 25%)";
-  }
-  if (radiusPos === "bottom-right") {
-    bottomRight = radius;
-    clipPath = "polygon(50% 100%, 101% 100%, 101% 66%, 50% 66%)";
-  }
-
-  return (
-    <Box
-      sx={{
-        outline: `solid 10px ${color}`,
-        backgroundColor: "transparent",
-        position: "absolute",
-        width: "20px",
-        top: "25%",
-        height: "50%",
-        clipPath: clipPath,
-        left: position === "left" ? "-20px" : "unset",
-        right: position === "right" ? "-20px" : "unset",
-        borderRadius: `${topLeft} ${topRight} ${bottomRight} ${bottomLeft}`,
-      }}
-    />
-  );
-};
-
-export const getFullOuterRadius = function getFullOuterRadius(
-  position: "top" | "bottom" | "full",
-  radius: string,
-  color: string,
-  alignment: string
-) {
-  return (
-    <>
-      {alignment !== "left" &&
-        createOuterCurveDiv(`${position}-right`, "left", radius, color)}
-      {alignment !== "right" &&
-        createOuterCurveDiv(`${position}-left`, "right", radius, color)}
-    </>
-  );
-};
-
 const getLongestTextAfterCurrent = function getLongestTextAfterCurrent(
-  array: LabelWidth[],
+  array: LabelDimensions[],
   startIdx: number,
   widthToCompareTo: number,
   acceptableSizeSimilarity: number
@@ -132,6 +61,11 @@ const getLongestTextAfterCurrent = function getLongestTextAfterCurrent(
   return longestInFuture;
 };
 
+const splitIntoSubset = function splitIntoSubset(text: string, limit: number) {
+  const splitRegex = new RegExp(`.{1,${limit}}`, "g");
+  return text.match(splitRegex)! as string[];
+};
+
 export const batchLines = function batchLines(
   lines: string[],
   wrapperDiv: HTMLDivElement,
@@ -140,67 +74,65 @@ export const batchLines = function batchLines(
 ) {
   const acceptableSizeSimilarity = 40;
 
-  const textWithWidths: LabelWidth[] = [];
+  const labelDimensions: LabelDimensions[] = [];
   lines.forEach((line) => {
+    let toAppend = [line];
     if (line.length > lineLengthLimit) {
-      const splitRegex = new RegExp(`.{1,${lineLengthLimit}}`, "g");
-      const split = line.match(splitRegex);
-      split?.forEach((s) =>
-        textWithWidths.push({
-          label: s,
-          width: getTextWidthInDiv(wrapperDiv, textDiv, s),
-        })
-      );
-    } else {
-      textWithWidths.push({
-        label: line,
-        width: getTextWidthInDiv(wrapperDiv, textDiv, line),
-      });
+      toAppend.push(...splitIntoSubset(line, lineLengthLimit));
     }
+
+    labelDimensions.push(
+      ...toAppend.map((x) => ({
+        label: x,
+        ...getLabelDimensionsInDiv(wrapperDiv, textDiv, x),
+      }))
+    );
   });
 
-  const batched: LabelWidth[][] = [[]];
+  const batched: Batch[] = [];
   let batch = 0;
-  for (let i = 0; i < textWithWidths.length; i += 1) {
-    const curr = textWithWidths[i];
+  for (let i = 0; i < labelDimensions.length; i += 1) {
+    const curr = labelDimensions[i];
 
     if (curr.label.length === 0) {
       batch += 2;
-      batched.push([{ label: "", width: 0 }], []);
-    } else if (i === 0 || batched[batch].length === 0) {
-      batched[batch].push(curr);
+      batched.push({ width: 0, labels: [] });
+    } else if (i === 0 || !batched[batch]) {
+      batched.push({ width: curr.width, labels: [curr] });
     } else {
-      const longestInCurrBatch = Math.max(
-        ...batched[batch].map((x) => x.width)
-      );
-
       const longestInFuture = getLongestTextAfterCurrent(
-        textWithWidths,
+        labelDimensions,
         i + 1,
         curr.width,
         acceptableSizeSimilarity
       );
 
       if (
-        differenceInWidth(longestInFuture, longestInCurrBatch) <
+        differenceInWidth(longestInFuture, batched[batch].width) <
           acceptableSizeSimilarity ||
-        differenceInWidth(curr.width, longestInCurrBatch) <
+        differenceInWidth(curr.width, batched[batch].width) <
           acceptableSizeSimilarity
       ) {
-        batched[batch].push(curr);
+        batched[batch].labels.push(curr);
+        if (batched[batch].width < curr.width) {
+          batched[batch].width = curr.width;
+        } else if (batched[batch].width === 0) {
+          batched[batch].width = curr.width;
+        }
       } else {
         batch += 1;
-        batched.push([]);
-        batched[batch].push(curr);
+        batched.push({ width: curr.width, labels: [curr] });
       }
     }
   }
+
+  console.log(batched);
 
   return batched;
 };
 
 export const longestStringInArray = function longestStringInArray(
-  arr: LabelWidth[]
+  arr: LabelDimensions[]
 ) {
   return arr.reduce((a, b) => (a.label.length > b.label.length ? a : b));
 };
@@ -229,55 +161,3 @@ export const isTextShorterThanSurroundingText =
 
     return { thanAbove, thanBelow };
   };
-
-export const getTextDivRadii = function getTextDivRadii(
-  isShorter: IsShorter,
-  radius: string
-) {
-  let topLeft, topRight, bottomLeft, bottomRight;
-  topLeft = topRight = bottomLeft = bottomRight = "0px";
-
-  if (isShorter.thanAbove) {
-    bottomLeft = bottomRight = radius;
-  }
-  if (isShorter.thanBelow) {
-    topLeft = topRight = radius;
-  }
-  if (!isShorter.thanAbove && !isShorter.thanBelow) {
-    topLeft = topRight = bottomLeft = bottomRight = radius;
-  }
-
-  return { topLeft, topRight, bottomLeft, bottomRight };
-};
-
-export const getTextDivOuterCurves = function getTextDivOuterCurves(
-  isFirstBatch: boolean,
-  isLastBatch: boolean,
-  isFirst: boolean,
-  isLast: boolean,
-  isOnly: boolean,
-  isShorter: IsShorter,
-  radius: string,
-  color: string,
-  alignment: string
-) {
-  let outerCurves = <></>;
-
-  if (
-    (isFirstBatch && isLast) ||
-    (isLastBatch && isFirst) ||
-    (!isFirstBatch &&
-      !isLastBatch &&
-      ((isFirst && isShorter.thanAbove) || (isLast && isShorter.thanBelow)))
-  ) {
-    if (isOnly && isShorter.thanAbove && isShorter.thanBelow) {
-      outerCurves = getFullOuterRadius("full", radius, color, alignment);
-    } else if (isFirst && isShorter.thanAbove) {
-      outerCurves = getFullOuterRadius("top", radius, color, alignment);
-    } else if (isShorter.thanBelow) {
-      outerCurves = getFullOuterRadius("bottom", radius, color, alignment);
-    }
-  }
-
-  return outerCurves;
-};
