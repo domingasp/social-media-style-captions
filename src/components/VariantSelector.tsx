@@ -1,26 +1,22 @@
-import { Box, Card, Group, Stack, Sx, Text } from "@mantine/core";
+import { Card, Group, Stack, Text } from "@mantine/core";
 import SVGText from "../services/SVGText";
 import React, { SetStateAction } from "react";
 import { RadioGroup } from "@headlessui/react";
 import { OptionWrapper, getHighlight } from "./CommonSelectorComponents";
 
-type OptionTextProps = {
-  sx?: Sx | (Sx | undefined)[] | undefined;
-};
-const OptionText = function OptionText({ sx }: OptionTextProps) {
-  const borderRadius = "0.25rem";
-  const padding = "0.25rem";
-
+const OptionText = function OptionText() {
   return (
     <Text
       weight="bold"
-      size="1.25rem"
+      size="1.2rem"
+      align="center"
       sx={{
-        position: "relative",
+        position: "absolute",
+        width: "100%",
+        height: "100%",
+        top: 2,
+        left: 0.25,
         lineHeight: "1rem",
-        padding,
-        borderRadius,
-        ...sx,
       }}
     >
       A
@@ -51,16 +47,16 @@ const VariantSelector = function VariantSelector({
           <Group mt="xs">
             <RadioGroup.Option value="plain">
               {({ checked }) => (
-                <OptionWrapper>
+                <OptionWrapper
+                  sx={{
+                    boxShadow: `0px 0px 0px 3px ${
+                      checked ? checkedColor : "black"
+                    }`,
+                    color: checked ? checkedColor : "black",
+                  }}
+                >
                   {checked && getHighlight(checkedColor)}
-                  <OptionText
-                    sx={{
-                      boxShadow: `0px 0px 0px 3px ${
-                        checked ? checkedColor : "black"
-                      }`,
-                      color: checked ? checkedColor : "black",
-                    }}
-                  />
+                  <OptionText />
                 </OptionWrapper>
               )}
             </RadioGroup.Option>
@@ -69,51 +65,54 @@ const VariantSelector = function VariantSelector({
               {({ checked }) => (
                 <OptionWrapper>
                   {checked && getHighlight(checkedColor)}
-                  <Box h="24px" w="22px" pos="relative">
-                    <SVGText
-                      content="A"
-                      color="white"
-                      strokeColor={checked ? checkedColor : "black"}
-                      style={{
-                        fontSize: "1.25rem",
-                        fontWeight: "bold",
-                      }}
-                    />
-                  </Box>
+                  <SVGText
+                    content="A"
+                    color="white"
+                    strokeColor={checked ? checkedColor : "black"}
+                    svgParentStyle={{
+                      position: "absolute",
+                      top: 1,
+                      left: 0.25,
+                    }}
+                    style={{
+                      fontSize: "1.2rem",
+                      fontWeight: "bold",
+                    }}
+                  />
                 </OptionWrapper>
               )}
             </RadioGroup.Option>
 
             <RadioGroup.Option value="opaque-bg">
               {({ checked }) => (
-                <OptionWrapper>
+                <OptionWrapper
+                  sx={{
+                    boxShadow: `0px 0px 0px 3px ${
+                      checked ? checkedColor : "black"
+                    }`,
+                    backgroundColor: checked ? checkedColor : "black",
+                    color: "white",
+                  }}
+                >
                   {checked && getHighlight(checkedColor)}
-                  <OptionText
-                    sx={{
-                      boxShadow: `0px 0px 0px 3px ${
-                        checked ? checkedColor : "black"
-                      }`,
-                      backgroundColor: checked ? checkedColor : "black",
-                      color: "white",
-                    }}
-                  />
+                  <OptionText />
                 </OptionWrapper>
               )}
             </RadioGroup.Option>
 
             <RadioGroup.Option value="transparent-bg">
               {({ checked }) => (
-                <OptionWrapper>
-                  <OptionText
-                    sx={{
-                      boxShadow: `0px 0px 0px 3px ${
-                        checked ? checkedColor : "#000000"
-                      }1F`,
-                      backgroundColor:
-                        (checked ? checkedColor : "#000000") + "1F",
-                      color: checked ? checkedColor : "black",
-                    }}
-                  />
+                <OptionWrapper
+                  sx={{
+                    boxShadow: `0px 0px 0px 3px ${
+                      checked ? checkedColor : "#000000"
+                    }1F`,
+                    backgroundColor:
+                      (checked ? checkedColor : "#000000") + "1F",
+                    color: checked ? checkedColor : "black",
+                  }}
+                >
+                  <OptionText />
                 </OptionWrapper>
               )}
             </RadioGroup.Option>
