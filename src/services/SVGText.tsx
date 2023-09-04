@@ -24,7 +24,6 @@ const SVGText = function SVGText({
   yPos = "80%",
 }: SVGTextProps) {
   const getXPosFromAlignment = function getXPosFromAlignment() {
-    console.log(batchContainerWidth, lineWidth);
     if (alignmentSetting === "left") return "0%";
     if (alignmentSetting === "right")
       return batchContainerWidth && lineWidth
