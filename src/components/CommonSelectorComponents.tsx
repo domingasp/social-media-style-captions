@@ -32,10 +32,10 @@ export const getHighlight = function getHighlight(checkedColor: string) {
         position: "absolute",
         backgroundColor: checkedColor,
         opacity: "10%",
-        width: "1.2rem",
-        height: "1.2rem",
-        top: 0,
-        left: 0,
+        width: "1.4rem",
+        height: "1.4rem",
+        top: -1,
+        left: -1.4,
         borderRadius: "0.125rem",
       }}
     />
