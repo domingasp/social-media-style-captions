@@ -184,7 +184,7 @@ const FormattedContent = function FormattedContent({
       >
         <MeasurementBox containerRef={containerRef} textRef={textRef} />
 
-        <BackgroundSVGForText />
+        <BackgroundSVGForText batches={batches} />
 
         <FormattedText
           batches={batches}
