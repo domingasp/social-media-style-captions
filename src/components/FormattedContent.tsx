@@ -96,7 +96,11 @@ const FormattedText = function FormattedText({
   colorInfo,
 }: FormattedTextProps) {
   return (
-    <FormattedWrapper pos="relative" align={alignmentToAlign(alignment)}>
+    <FormattedWrapper
+      pos="relative"
+      align={alignmentToAlign(alignment)}
+      sx={{ zIndex: 1 }}
+    >
       {batches.map((batch, i) => (
         <Box
           key={i}
@@ -184,14 +188,14 @@ const FormattedContent = function FormattedContent({
       >
         <MeasurementBox containerRef={containerRef} textRef={textRef} />
 
-        <BackgroundSVGForText batches={batches} />
-
         <FormattedText
           batches={batches}
           alignment={alignment}
           variant={variant}
           colorInfo={colorInfo}
         />
+
+        <BackgroundSVGForText batches={batches} />
       </Box>
     </Box>
   );
