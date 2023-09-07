@@ -1,8 +1,9 @@
 import { Box, Stack, StackProps, Sx, Text } from "@mantine/core";
-import SVGText from "../services/SVGText";
+import SVGText from "./SVGText";
 import React, { forwardRef } from "react";
 import ColorInformation from "../views/caption-creator/types/ColorInformation";
 import Batch from "../views/caption-creator/types/Batch";
+import BackgroundSVGForText from "./BackgroundSVGForText";
 
 const alignmentToAlign = function alignmentToAlign(alignment: string) {
   if (alignment === "left") return "flex-start";
@@ -18,7 +19,7 @@ const FormattedWrapper = function FormattedWrapper({
   ...props
 }: FormattedWrapperProps) {
   return (
-    <Stack align="center" spacing={0} p="2rem 30px" {...props}>
+    <Stack align="center" spacing={0} {...props}>
       {children}
     </Stack>
   );
@@ -112,6 +113,7 @@ const FormattedText = function FormattedText({
                   width: "100%",
                   zIndex: 100 - j,
                   marginTop: i > 0 || j !== 0 ? "-0.88rem" : "unset",
+                  backgroundColor: "red",
                 }}
               >
                 <FormattedTextAsDiv content={line.label} />
@@ -173,9 +175,16 @@ const FormattedContent = function FormattedContent({
   outputContainerId = "output",
 }: FormattedContentProps) {
   return (
-    <Box mt={8}>
-      <Box pos="relative" display="inline-block" id={outputContainerId}>
+    <Box mt={8} p="2rem 30px">
+      <Box
+        pos="relative"
+        display="inline-block"
+        id={outputContainerId}
+        bg="purple"
+      >
         <MeasurementBox containerRef={containerRef} textRef={textRef} />
+
+        <BackgroundSVGForText />
 
         <FormattedText
           batches={batches}

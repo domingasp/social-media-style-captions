@@ -1,5 +1,5 @@
 import { Card, Group, Stack, Text } from "@mantine/core";
-import SVGText from "../services/SVGText";
+import SVGText from "./SVGText";
 import React, { SetStateAction } from "react";
 import { RadioGroup } from "@headlessui/react";
 import { OptionWrapper, getHighlight } from "./CommonSelectorComponents";
