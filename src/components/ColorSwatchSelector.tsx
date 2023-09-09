@@ -1,5 +1,5 @@
 import { ColorSwatch, Group } from "@mantine/core";
-import ColorInformation from "../views/caption-creator/types/ColorInformation";
+import ColorInformation from "../types/ColorInformation";
 import { IconCheck } from "@tabler/icons-react";
 import { RadioGroup } from "@headlessui/react";
 

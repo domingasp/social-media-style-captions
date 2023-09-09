@@ -1,6 +1,6 @@
-import Batch from "./types/Batch";
-import IsShorter from "./types/IsShorter";
-import { LabelDimensions } from "./types/LabelWidth";
+import Batch from "../../classes/Batch";
+import IsShorter from "../../types/IsShorter";
+import { LabelDimensions } from "../../types/LabelWidth";
 
 const getTextWidthOnCanvas = function getTextOnWidth(text: string) {
   const canvas: HTMLCanvasElement = document.createElement("canvas");
@@ -96,9 +96,9 @@ export const batchLines = function batchLines(
 
     if (curr.label.length === 0) {
       batch += 2;
-      batched.push({ width: 0, labels: [] });
+      batched.push(new Batch([]));
     } else if (i === 0 || !batched[batch]) {
-      batched.push({ width: curr.width, labels: [curr] });
+      batched.push(new Batch([curr]));
     } else {
       const longestInFuture = getLongestTextAfterCurrent(
         labelDimensions,
@@ -108,20 +108,20 @@ export const batchLines = function batchLines(
       );
 
       if (
-        differenceInWidth(longestInFuture, batched[batch].width) <
+        differenceInWidth(longestInFuture, batched[batch]._width) <
           acceptableSizeSimilarity ||
-        differenceInWidth(curr.width, batched[batch].width) <
+        differenceInWidth(curr.width, batched[batch]._width) <
           acceptableSizeSimilarity
       ) {
-        batched[batch].labels.push(curr);
-        if (batched[batch].width < curr.width) {
-          batched[batch].width = curr.width;
-        } else if (batched[batch].width === 0) {
-          batched[batch].width = curr.width;
+        batched[batch].addLabel(curr);
+        if (batched[batch]._width < curr.width) {
+          batched[batch]._width = curr.width;
+        } else if (batched[batch]._width === 0) {
+          batched[batch]._width = curr.width;
         }
       } else {
         batch += 1;
-        batched.push({ width: curr.width, labels: [curr] });
+        batched.push(new Batch([curr]));
       }
     }
   }

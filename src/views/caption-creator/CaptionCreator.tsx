@@ -19,9 +19,9 @@ import FormattedText from "../../components/FormattedContent";
 import VariantSelector from "../../components/VariantSelector";
 import AlignmentSelector from "../../components/AlignmentSelector";
 import ColorSwatchSelector from "../../components/ColorSwatchSelector";
-import ColorInformation from "./types/ColorInformation";
+import ColorInformation from "../../types/ColorInformation";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
-import Batch from "./types/Batch";
+import Batch from "../../classes/Batch";
 
 function CaptionCreator() {
   const [content, setContent] = useState("Text\nTesting");
@@ -80,7 +80,7 @@ function CaptionCreator() {
     const node = document.getElementById("output");
 
     const dataUrl = type === "png" ? await toPng(node!) : await toSvg(node!);
-    FileSaver.saveAs(dataUrl, batches.map((x) => x.labels).join("-"));
+    FileSaver.saveAs(dataUrl, batches.map((x) => x._labels).join("-"));
   };
 
   return (

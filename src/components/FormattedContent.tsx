@@ -1,8 +1,8 @@
 import { Box, Stack, StackProps, Sx, Text } from "@mantine/core";
 import SVGText from "./SVGText";
 import React, { forwardRef } from "react";
-import ColorInformation from "../views/caption-creator/types/ColorInformation";
-import Batch from "../views/caption-creator/types/Batch";
+import ColorInformation from "../types/ColorInformation";
+import Batch from "../classes/Batch";
 import BackgroundSVGForText from "./BackgroundSVGForText";
 
 const alignmentToAlign = function alignmentToAlign(alignment: string) {
@@ -106,10 +106,10 @@ const FormattedText = function FormattedText({
           key={i}
           sx={{
             zIndex: 100 - i,
-            marginTop: batch.width === 0 ? "2rem" : "unset",
+            marginTop: batch.isEmpty ? "2rem" : "unset",
           }}
         >
-          {batch.labels.map((line, j) => (
+          {batch._labels.map((line, j) => (
             <Box pos="relative" key={j}>
               <TextWrapper
                 sx={{
@@ -133,7 +133,7 @@ const FormattedText = function FormattedText({
                       : "#FFFFFF"
                   }
                   alignmentSetting={alignment}
-                  batchContainerWidth={batch.width}
+                  batchContainerWidth={batch._width}
                   lineWidth={line.width}
                   yPos="70%"
                   svgParentStyle={{
