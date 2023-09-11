@@ -29,12 +29,14 @@ export const zCurve = function zCurve(
   endY: number,
   radius: number
 ) {
-  return `${line(x - radius, startY)} ${arc(
-    x,
-    startY + radius,
-    radius,
-    true
-  )} ${line(x, endY - radius)} ${arc(x + radius, endY, radius, false)}`;
+  let path: string = "";
+
+  path += line(x - radius, startY) + " ";
+  path += arc(x, startY + radius, radius, true) + " ";
+  path += line(x, endY - radius) + " ";
+  path += arc(x + radius, endY, radius, false);
+
+  return path;
 };
 
 export const bottomCap = function bottomCap(
@@ -47,25 +49,16 @@ export const bottomCap = function bottomCap(
   const leftSideX = topRightX - width;
   const bottomY = y + height;
 
-  return `${line(topRightX - radius, y)} ${arc(
-    topRightX,
-    y + radius,
-    radius,
-    true
-  )} ${line(topRightX, bottomY - radius)} ${arc(
-    topRightX - radius,
-    bottomY,
-    radius,
-    true
-  )} ${line(leftSideX + radius, bottomY)} ${arc(
-    leftSideX,
-    bottomY - radius,
-    radius,
-    true
-  )} ${line(leftSideX, y + radius)} ${arc(
-    leftSideX + radius,
-    y,
-    radius,
-    true
-  )}`;
+  let path: string = "";
+
+  path += line(topRightX - radius, y) + " ";
+  path += arc(topRightX, y + radius, radius, true) + " ";
+  path += line(topRightX, bottomY - radius) + " ";
+  path += arc(topRightX - radius, bottomY, radius, true) + " ";
+  path += line(leftSideX + radius, bottomY) + " ";
+  path += arc(leftSideX, bottomY - radius, radius, true) + " ";
+  path += line(leftSideX, y + radius) + " ";
+  path += arc(leftSideX + radius, y, radius, true);
+
+  return path;
 };
