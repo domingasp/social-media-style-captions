@@ -1,5 +1,5 @@
 import Batch from "../classes/Batch";
-import { bottomCap, close, move, zCurve } from "../services/svg-helpers";
+import { bottomCap, close, move, lCurve } from "../services/svg-helpers";
 import { differenceInWidth } from "../views/caption-creator/helpers";
 
 const generateBackgroundPath = function generateBackgroundPath(
@@ -44,7 +44,7 @@ const generateBackgroundPath = function generateBackgroundPath(
     }
     if (isBatchShorterThanNext) {
       rightPaths.push(
-        zCurve(
+        lCurve(
           startX + b._width - radius,
           0,
           b.heightIncludingMargin(margin),

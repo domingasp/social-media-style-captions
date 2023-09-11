@@ -23,7 +23,7 @@ const arc = function arc(
   return `A ${radius} ${radius} 0 0 ${isOuter ? 1 : 0} ${x} ${y}`;
 };
 
-export const zCurve = function zCurve(
+export const lCurve = function lCurve(
   x: number,
   startY: number,
   endY: number,
