@@ -1,5 +1,5 @@
 import Batch from "../classes/Batch";
-import { close, move, zCurve } from "../services/svg-helpers";
+import { bottomCap, close, move, zCurve } from "../services/svg-helpers";
 import { differenceInWidth } from "../views/caption-creator/helpers";
 
 const generateBackgroundPath = function generateBackgroundPath(
@@ -11,7 +11,9 @@ const generateBackgroundPath = function generateBackgroundPath(
   let leftPaths: string[] = [];
   let rightPaths: string[] = [];
 
+  const isSingle = batches.length === 1;
   let startX = 0;
+  let startY = 0;
   batches.forEach((b, i) => {
     const isFirst = i === 0;
     const isLast = i === batches.length - 1;
@@ -25,6 +27,21 @@ const generateBackgroundPath = function generateBackgroundPath(
       isBatchShorterThanNext = b.isShorterThan(batches[i + 1]);
     }
 
+    if (isLast && !isSingle) {
+      const sizeDifferenceToPrevious = differenceInWidth(
+        b._width,
+        batches[i - 1]._width
+      );
+      rightPaths.push(
+        bottomCap(
+          startX + sizeDifferenceToPrevious / 2,
+          startY,
+          b._width,
+          b.heightIncludingMargin(0),
+          radius
+        )
+      );
+    }
     if (isBatchShorterThanNext) {
       rightPaths.push(
         zCurve(
@@ -34,6 +51,9 @@ const generateBackgroundPath = function generateBackgroundPath(
           radius
         )
       );
+
+      startX += b._width - radius;
+      startY += b.heightIncludingMargin(margin);
     }
   });
 

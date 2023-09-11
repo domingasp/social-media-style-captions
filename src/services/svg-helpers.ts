@@ -36,3 +36,36 @@ export const zCurve = function zCurve(
     true
   )} ${line(x, endY - radius)} ${arc(x + radius, endY, radius, false)}`;
 };
+
+export const bottomCap = function bottomCap(
+  topRightX: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number
+) {
+  const leftSideX = topRightX - width;
+  const bottomY = y + height;
+
+  return `${line(topRightX - radius, y)} ${arc(
+    topRightX,
+    y + radius,
+    radius,
+    true
+  )} ${line(topRightX, bottomY - radius)} ${arc(
+    topRightX - radius,
+    bottomY,
+    radius,
+    true
+  )} ${line(leftSideX + radius, bottomY)} ${arc(
+    leftSideX,
+    bottomY - radius,
+    radius,
+    true
+  )} ${line(leftSideX, y + radius)} ${arc(
+    leftSideX + radius,
+    y,
+    radius,
+    true
+  )}`;
+};
