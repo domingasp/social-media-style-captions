@@ -116,7 +116,7 @@ const FormattedText = function FormattedText({
                   position: "relative",
                   width: "100%",
                   zIndex: 100 - j,
-                  marginTop: i > 0 || j !== 0 ? "-0.88rem" : "unset",
+                  marginTop: i > 0 || j !== 0 ? "-1rem" : "unset",
                   backgroundColor: "red",
                 }}
               >

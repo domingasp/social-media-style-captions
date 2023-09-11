@@ -1,11 +1,44 @@
 import Batch from "../classes/Batch";
+import { close, move, zCurve } from "../services/svg-helpers";
+import { differenceInWidth } from "../views/caption-creator/helpers";
 
-const calculateBatchHeight = function calculateBatchHeight(
-  batch: Batch,
+const generateBackgroundPath = function generateBackgroundPath(
+  batches: Batch[],
+  radius: number,
   margin: number
 ) {
-  if (batch.isEmpty) return 0;
-  return batch._height - margin * (batch.labelAmount - 1);
+  const longestBatchWidth = Math.max(...batches.map((x) => x._width));
+  let leftPaths: string[] = [];
+  let rightPaths: string[] = [];
+
+  let startX = 0;
+  batches.forEach((b, i) => {
+    const isFirst = i === 0;
+    const isLast = i === batches.length - 1;
+
+    let isBatchShorterThanNext = false;
+    if (isFirst) {
+      startX = differenceInWidth(b._width, longestBatchWidth) / 2 + radius;
+      rightPaths.push(move(startX, 0));
+    }
+    if (!isLast && batches.length > 1) {
+      isBatchShorterThanNext = b.isShorterThan(batches[i + 1]);
+    }
+
+    if (isBatchShorterThanNext) {
+      rightPaths.push(
+        zCurve(
+          startX + b._width - radius,
+          0,
+          b.heightIncludingMargin(margin),
+          radius
+        )
+      );
+    }
+  });
+
+  leftPaths.push(close());
+  return rightPaths.concat(leftPaths).join(" ");
 };
 
 type BackgroundSVGForTextProps = {
@@ -15,15 +48,7 @@ const BackgroundSVGForText = function BackgroundSVGForText({
   batches,
 }: BackgroundSVGForTextProps) {
   const radius = 12;
-  const margin = 14.08;
-
-  const generateBackgroundPath = function generateBackgroundPath() {
-    let paths: string[] = [];
-
-    if (batches.length === 0) return "";
-
-    return paths.join(" ");
-  };
+  const margin = 16;
 
   return (
     <svg
@@ -40,7 +65,7 @@ const BackgroundSVGForText = function BackgroundSVGForText({
         opacity: "50%",
       }}
     >
-      <path d={generateBackgroundPath()} fill="green" />
+      <path d={generateBackgroundPath(batches, radius, margin)} fill="green" />
     </svg>
   );
 };
