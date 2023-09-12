@@ -50,6 +50,25 @@ export const jCurve = function jCurve(x: number, y: number, radius: number) {
   return path;
 };
 
+export const hookCurve = function hookCurve(
+  x: number,
+  startY: number,
+  width: number,
+  height: number,
+  radius: number,
+  differenceInSize: number
+) {
+  let path: string = "";
+
+  path += line(x - radius, startY) + " ";
+  path += arc(x, startY + radius, radius, true) + " ";
+  path += line(x, startY + height - radius) + " ";
+  path += arc(x - radius, startY + height, radius, true);
+  path += line(x - differenceInSize + radius, startY + height);
+
+  return path;
+};
+
 export const bottomCap = function bottomCap(
   topRightX: number,
   y: number,

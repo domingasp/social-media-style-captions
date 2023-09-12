@@ -5,6 +5,7 @@ import {
   move,
   lCurve,
   jCurve,
+  hookCurve,
 } from "../services/svg-helpers";
 import { differenceInWidth } from "../views/caption-creator/helpers";
 
@@ -38,31 +39,51 @@ const generateBackgroundPath = function generateBackgroundPath(
         b._width,
         batches[i - 1]._width
       );
-      rightPaths.push(
-        bottomCap(
-          startX + sizeDifferenceToPrevious / 2,
-          startY,
-          b._width,
-          b.heightIncludingMargin(0),
-          radius
-        )
-      );
+      const isBatchShorterThanPrevious = b.isShorterThan(batches[i - 1]);
+      if (!isBatchShorterThanPrevious) {
+        rightPaths.push(
+          bottomCap(
+            startX + sizeDifferenceToPrevious / 2,
+            startY,
+            b._width,
+            b.heightIncludingMargin(0, isBatchShorterThanPrevious),
+            radius
+          )
+        );
+      }
     }
     if (!isLast && isBatchShorterThanNext) {
       rightPaths.push(
         lCurve(
           startX + b._width - radius,
           0,
-          b.heightIncludingMargin(margin),
+          b.heightIncludingMargin(margin, isBatchShorterThanNext),
           radius
         )
       );
 
       const offset = differenceInWidth(b._width, longestBatchWidth) / 2;
-      leftPaths.push(jCurve(offset, b.heightIncludingMargin(margin), radius));
+      leftPaths.push(
+        jCurve(
+          offset,
+          b.heightIncludingMargin(margin, isBatchShorterThanNext),
+          radius
+        )
+      );
 
       startX += b._width - radius;
-      startY += b.heightIncludingMargin(margin);
+      startY += b.heightIncludingMargin(margin, isBatchShorterThanNext);
+    } else if (!isLast && !isBatchShorterThanNext) {
+      rightPaths.push(
+        hookCurve(
+          startX + b._width - radius,
+          startY,
+          b._width,
+          b.heightIncludingMargin(margin, isBatchShorterThanNext),
+          radius,
+          differenceInWidth(b._width, batches[i + 1]._width) / 2
+        )
+      );
     }
   });
 
