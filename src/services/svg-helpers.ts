@@ -39,6 +39,17 @@ export const lCurve = function lCurve(
   return path;
 };
 
+export const jCurve = function jCurve(x: number, y: number, radius: number) {
+  let path: string = "";
+
+  path += line(x - radius, y);
+  path += arc(x, y - radius, radius, false);
+  path += line(x, 0 + radius);
+  path += arc(x + radius, 0, radius, true);
+
+  return path;
+};
+
 export const bottomCap = function bottomCap(
   topRightX: number,
   y: number,

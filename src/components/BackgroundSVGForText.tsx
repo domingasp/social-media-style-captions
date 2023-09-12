@@ -1,5 +1,11 @@
 import Batch from "../classes/Batch";
-import { bottomCap, close, move, lCurve } from "../services/svg-helpers";
+import {
+  bottomCap,
+  close,
+  move,
+  lCurve,
+  jCurve,
+} from "../services/svg-helpers";
 import { differenceInWidth } from "../views/caption-creator/helpers";
 
 const generateBackgroundPath = function generateBackgroundPath(
@@ -42,7 +48,7 @@ const generateBackgroundPath = function generateBackgroundPath(
         )
       );
     }
-    if (isBatchShorterThanNext) {
+    if (!isLast && isBatchShorterThanNext) {
       rightPaths.push(
         lCurve(
           startX + b._width - radius,
@@ -51,6 +57,9 @@ const generateBackgroundPath = function generateBackgroundPath(
           radius
         )
       );
+
+      const offset = differenceInWidth(b._width, longestBatchWidth) / 2;
+      leftPaths.push(jCurve(offset, b.heightIncludingMargin(margin), radius));
 
       startX += b._width - radius;
       startY += b.heightIncludingMargin(margin);
