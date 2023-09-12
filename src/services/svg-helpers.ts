@@ -92,3 +92,26 @@ export const bottomCap = function bottomCap(
 
   return path;
 };
+
+export const bottomCapShorter = function bottomCapShorter(
+  topRightX: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number
+) {
+  const leftSideX = topRightX - width;
+  const bottomY = y + height;
+
+  let path: string = "";
+
+  path += arc(topRightX, y + radius, radius, false) + " ";
+  path += line(topRightX, bottomY - radius) + " ";
+  path += arc(topRightX - radius, bottomY, radius, true) + " ";
+  path += line(leftSideX + radius, bottomY) + " ";
+  path += arc(leftSideX, bottomY - radius, radius, true) + " ";
+  path += line(leftSideX, y + radius) + " ";
+  path += arc(leftSideX - radius, y, radius, false);
+
+  return path;
+};

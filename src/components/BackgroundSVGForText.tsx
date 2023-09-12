@@ -6,6 +6,7 @@ import {
   lCurve,
   jCurve,
   hookCurve,
+  bottomCapShorter,
 } from "../services/svg-helpers";
 import { differenceInWidth } from "../views/caption-creator/helpers";
 
@@ -50,6 +51,16 @@ const generateBackgroundPath = function generateBackgroundPath(
             radius
           )
         );
+      } else {
+        rightPaths.push(
+          bottomCapShorter(
+            startX - sizeDifferenceToPrevious / 2,
+            startY,
+            b._width,
+            b.heightIncludingMargin(margin, isBatchShorterThanPrevious),
+            radius
+          )
+        );
       }
     }
     if (!isLast && isBatchShorterThanNext) {
@@ -85,6 +96,9 @@ const generateBackgroundPath = function generateBackgroundPath(
         )
       );
     }
+
+    startX += b._width - radius;
+    startY += b.heightIncludingMargin(margin, isBatchShorterThanNext);
   });
 
   leftPaths.push(close());
