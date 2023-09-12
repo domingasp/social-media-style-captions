@@ -1,14 +1,5 @@
 import Batch from "../classes/Batch";
-import {
-  bottomCap,
-  close,
-  move,
-  lCurve,
-  jCurve,
-  hookCurve,
-  bottomCapShorter,
-  hookLeftCurve,
-} from "../services/svg-helpers";
+import { close, move } from "../services/svg-helpers";
 import { differenceInWidth } from "../views/caption-creator/helpers";
 
 const generateBackgroundPath = function generateBackgroundPath(
@@ -21,95 +12,24 @@ const generateBackgroundPath = function generateBackgroundPath(
   let rightPaths: string[] = [];
 
   const isSingle = batches.length === 1;
-  let startX = 0;
-  let startY = 0;
+  let position = { x: 0, y: 0 };
   batches.forEach((b, i) => {
-    const isFirst = i === 0;
-    const isLast = i === batches.length - 1;
-
-    let isBatchShorterThanNext = false;
-    if (isFirst) {
-      startX = differenceInWidth(b._width, longestBatchWidth) / 2 + radius;
-      rightPaths.push(move(startX, 0));
-    }
-    if (!isLast && batches.length > 1) {
-      isBatchShorterThanNext = b.isShorterThan(batches[i + 1]);
+    if (isSingle) {
+      return;
     }
 
-    if (isLast && !isSingle) {
-      const sizeDifferenceToPrevious = differenceInWidth(
-        b._width,
-        batches[i - 1]._width
-      );
-      const isBatchShorterThanPrevious = b.isShorterThan(batches[i - 1]);
-      if (!isBatchShorterThanPrevious) {
-        rightPaths.push(
-          bottomCap(
-            startX + sizeDifferenceToPrevious / 2,
-            startY,
-            b._width,
-            b.heightIncludingMargin(0, isBatchShorterThanPrevious),
-            radius
-          )
-        );
-      } else {
-        rightPaths.push(
-          bottomCapShorter(
-            startX - sizeDifferenceToPrevious / 2,
-            startY,
-            b._width,
-            b.heightIncludingMargin(margin, isBatchShorterThanPrevious),
-            radius
-          )
-        );
-      }
-    }
-    if (!isLast && isBatchShorterThanNext) {
-      rightPaths.push(
-        lCurve(
-          startX + b._width - radius,
-          0,
-          b.heightIncludingMargin(margin, isBatchShorterThanNext),
-          radius
-        )
-      );
-
-      const offset = differenceInWidth(b._width, longestBatchWidth) / 2;
-      leftPaths.push(
-        jCurve(
-          offset,
-          b.heightIncludingMargin(margin, isBatchShorterThanNext),
-          radius
-        )
-      );
-
-      startX += b._width - radius;
-      startY += b.heightIncludingMargin(margin, isBatchShorterThanNext);
-    } else if (!isLast && !isBatchShorterThanNext) {
-      rightPaths.push(
-        hookCurve(
-          startX + b._width - radius,
-          startY,
-          b._width,
-          b.heightIncludingMargin(margin, isBatchShorterThanNext),
-          radius,
-          differenceInWidth(b._width, batches[i + 1]._width) / 2
-        )
-      );
-
-      const offset = differenceInWidth(b._width, longestBatchWidth) / 2;
-      leftPaths.push(
-        hookLeftCurve(
-          offset,
-          b.heightIncludingMargin(margin, isBatchShorterThanNext),
-          b.heightIncludingMargin(margin, isBatchShorterThanNext),
-          radius
-        )
-      );
+    if (i === 0) {
+      position.x = differenceInWidth(b._width, longestBatchWidth) / 2 + radius;
+      rightPaths.push(move(position.x, 0));
     }
 
-    startX += b._width - radius;
-    startY += b.heightIncludingMargin(margin, isBatchShorterThanNext);
+    const adjacentBatch =
+      i < batches.length - 1 ? batches[i + 1] : batches[i - 1];
+    let shorterThanAdjacent = b.isShorterThan(adjacentBatch); // for last batch 'adjacentBatch' means the previous batch
+    let widthDifferenceToAdjacent = differenceInWidth(
+      b._width,
+      adjacentBatch._width
+    );
   });
 
   leftPaths.push(close());
