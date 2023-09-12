@@ -7,6 +7,7 @@ import {
   jCurve,
   hookCurve,
   bottomCapShorter,
+  hookLeftCurve,
 } from "../services/svg-helpers";
 import { differenceInWidth } from "../views/caption-creator/helpers";
 
@@ -93,6 +94,16 @@ const generateBackgroundPath = function generateBackgroundPath(
           b.heightIncludingMargin(margin, isBatchShorterThanNext),
           radius,
           differenceInWidth(b._width, batches[i + 1]._width) / 2
+        )
+      );
+
+      const offset = differenceInWidth(b._width, longestBatchWidth) / 2;
+      leftPaths.push(
+        hookLeftCurve(
+          offset,
+          b.heightIncludingMargin(margin, isBatchShorterThanNext),
+          b.heightIncludingMargin(margin, isBatchShorterThanNext),
+          radius
         )
       );
     }

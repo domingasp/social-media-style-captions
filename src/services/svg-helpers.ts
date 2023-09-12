@@ -69,6 +69,22 @@ export const hookCurve = function hookCurve(
   return path;
 };
 
+export const hookLeftCurve = function hookLeftCurve(
+  x: number,
+  y: number,
+  height: number,
+  radius: number
+) {
+  let path: string = "";
+
+  path += line(x + radius, y) + " ";
+  path += arc(x, y - radius, radius, true) + " ";
+  path += line(x, y - height + radius) + " ";
+  path += arc(x + radius, y - height, radius, true);
+
+  return path;
+};
+
 export const bottomCap = function bottomCap(
   topRightX: number,
   y: number,
