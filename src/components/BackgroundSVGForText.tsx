@@ -80,7 +80,8 @@ const generateBackgroundPath = function generateBackgroundPath(
         radius,
         (adjacentBatches.after?._widthDifference ??
           adjacentBatches.before!._widthDifference) / 2,
-        adjacentBatches.before?._isLonger ?? false
+        adjacentBatches.before?._isLonger ?? false,
+        i === batches.length - 1 ? b._width : undefined
       );
       rightPaths.push(curve.path);
       position = { ...curve.coords };
@@ -101,7 +102,8 @@ const generateBackgroundPath = function generateBackgroundPath(
         height,
         radius,
         (adjacentBatches.after?._widthDifference ??
-          adjacentBatches.before!._widthDifference) / 2
+          adjacentBatches.before!._widthDifference) / 2,
+        i === batches.length - 1 ? b._width : undefined
       );
       rightPaths.push(curve.path);
       position = { ...curve.coords };

@@ -34,17 +34,18 @@ export const lCurve = function lCurve(
   height: number,
   radius: number,
   widthDifference: number,
-  interior: boolean
+  interior: boolean,
+  width?: number
 ): SVGPathResponse {
   let path: string = "";
 
   let destination: { x: number; y: number } = {
-    x: x + widthDifference,
+    x: x + (width ?? widthDifference),
     y: y + height,
   };
 
   if (interior) {
-    destination.x = x - widthDifference;
+    destination.x = x - (width ?? widthDifference);
     destination.y = y + height;
 
     path += arc(x - radius, y + radius, radius, false) + " ";
@@ -67,12 +68,13 @@ export const hookCurve = function hookCurve(
   y: number,
   height: number,
   radius: number,
-  widthDifference: number
+  widthDifference: number,
+  width?: number
 ): SVGPathResponse {
   let path: string = "";
 
   let destination: { x: number; y: number } = {
-    x: x - widthDifference + radius,
+    x: x - (width ?? widthDifference) + radius,
     y: y + height,
   };
   path += line(x - radius, y) + " ";
