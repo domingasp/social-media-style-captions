@@ -80,7 +80,11 @@ function CaptionCreator() {
     const node = document.getElementById("output");
 
     const dataUrl = type === "png" ? await toPng(node!) : await toSvg(node!);
-    FileSaver.saveAs(dataUrl, batches.map((x) => x._labels).join("-"));
+    const fileName = batches
+      .map((x) => x._labels.map((y) => y.label))
+      .flat(1)
+      .join("-");
+    FileSaver.saveAs(dataUrl, fileName);
   };
 
   return (

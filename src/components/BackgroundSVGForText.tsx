@@ -1,6 +1,21 @@
 import Batch from "../classes/Batch";
-import { close, move } from "../services/svg-helpers";
+import { close, hookCurve, lCurve, move } from "../services/svg-helpers";
 import { differenceInWidth } from "../views/caption-creator/helpers";
+
+class AdjacentBatchInformation {
+  _batch: Batch;
+  _isLonger: boolean;
+  _widthDifference: number;
+
+  constructor(currBatch: Batch, adjacentBatch: Batch) {
+    this._batch = adjacentBatch;
+    this._isLonger = currBatch.isShorterThan(adjacentBatch);
+    this._widthDifference = differenceInWidth(
+      currBatch._width,
+      adjacentBatch._width
+    );
+  }
+}
 
 const generateBackgroundPath = function generateBackgroundPath(
   batches: Batch[],
@@ -12,7 +27,7 @@ const generateBackgroundPath = function generateBackgroundPath(
   let rightPaths: string[] = [];
 
   const isSingle = batches.length === 1;
-  let position = { x: 0, y: 0 };
+  let position: { x: number; y: number } = { x: 0, y: 0 };
   batches.forEach((b, i) => {
     if (isSingle) {
       return;
@@ -20,16 +35,49 @@ const generateBackgroundPath = function generateBackgroundPath(
 
     if (i === 0) {
       position.x = differenceInWidth(b._width, longestBatchWidth) / 2 + radius;
-      rightPaths.push(move(position.x, 0));
+      rightPaths.push(move(position.x, position.y));
     }
 
-    const adjacentBatch =
-      i < batches.length - 1 ? batches[i + 1] : batches[i - 1];
-    let shorterThanAdjacent = b.isShorterThan(adjacentBatch); // for last batch 'adjacentBatch' means the previous batch
-    let widthDifferenceToAdjacent = differenceInWidth(
-      b._width,
-      adjacentBatch._width
+    const adjacentBatches: {
+      before: AdjacentBatchInformation | undefined;
+      after: AdjacentBatchInformation | undefined;
+    } = {
+      before: batches[i - 1]
+        ? new AdjacentBatchInformation(b, batches[i - 1])
+        : undefined,
+      after: batches[i + 1]
+        ? new AdjacentBatchInformation(b, batches[i + 1])
+        : undefined,
+    };
+
+    const height = b.heightIncludingMargin(
+      margin,
+      adjacentBatches.after?._isLonger ?? adjacentBatches.before!._isLonger
     );
+
+    if (adjacentBatches.after?._isLonger || adjacentBatches.before?._isLonger) {
+      const curve = lCurve(
+        position.x + b._width - radius,
+        position.y,
+        height,
+        radius
+      );
+      rightPaths.push(curve.path);
+
+      position = { ...curve.coords };
+    } else {
+      const curve = hookCurve(
+        position.x,
+        position.y,
+        (adjacentBatches.after?._widthDifference ??
+          adjacentBatches.before!._widthDifference) / 2,
+        height,
+        radius
+      );
+      rightPaths.push(curve.path);
+
+      position = { ...curve.coords };
+    }
   });
 
   leftPaths.push(close());
