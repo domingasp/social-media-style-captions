@@ -35,7 +35,6 @@ const generateBackgroundPath = function generateBackgroundPath(
 
   const isSingle = batches.length === 1;
   let position: { x: number; y: number } = { x: 0, y: 0 };
-  console.log("start");
   batches.forEach((b, i) => {
     if (isSingle) {
       return;
@@ -76,20 +75,18 @@ const generateBackgroundPath = function generateBackgroundPath(
       const curve = lCurve(
         position.x,
         position.y,
+        b._width,
         height,
         radius,
         (adjacentBatches.after?._widthDifference ??
           adjacentBatches.before!._widthDifference) / 2,
-        adjacentBatches.before?._isLonger ?? false,
-        i === batches.length - 1 ? b._width : undefined
+        (adjacentBatches.before?._widthDifference ?? 0) / 2,
+        i === batches.length - 1,
+        adjacentBatches.before?._isLonger ?? false
       );
-      rightPaths.push(curve.path);
+      rightPaths.push(curve.rightPath);
+      leftPaths.push(curve.leftPath);
       position = { ...curve.coords };
-
-      console.log(
-        "lcurve",
-        b._labels.map((x) => x.label)
-      );
     }
 
     if (
@@ -99,39 +96,36 @@ const generateBackgroundPath = function generateBackgroundPath(
       const curve = hookCurve(
         position.x,
         position.y,
+        b._width,
         height,
         radius,
         (adjacentBatches.after?._widthDifference ??
           adjacentBatches.before!._widthDifference) / 2,
-        i === batches.length - 1 ? b._width : undefined
+        (adjacentBatches.before?._widthDifference ?? 0) / 2,
+        i === batches.length - 1
       );
-      rightPaths.push(curve.path);
+      rightPaths.push(curve.rightPath);
+      leftPaths.push(curve.leftPath);
       position = { ...curve.coords };
-
-      console.log(
-        "hookcurve",
-        b._labels.map((x) => x.label)
-      );
     }
 
     if (adjacentBatches.before?._isLonger && adjacentBatches.after?._isLonger) {
       const curve = cCurve(
         position.x,
         position.y,
+        b._width,
         height,
         radius,
-        adjacentBatches.after._widthDifference / 2
+        adjacentBatches.after._widthDifference / 2,
+        (adjacentBatches.before?._widthDifference ?? 0) / 2
       );
-      rightPaths.push(curve.path);
+      rightPaths.push(curve.rightPath);
+      leftPaths.push(curve.leftPath);
       position = { ...curve.coords };
-
-      console.log(
-        "ccurve",
-        b._labels.map((x) => x.label)
-      );
     }
   });
 
+  leftPaths = leftPaths.reverse();
   leftPaths.push(close());
   return rightPaths.concat(leftPaths).join(" ");
 };

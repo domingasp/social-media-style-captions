@@ -1,5 +1,6 @@
 export type SVGPathResponse = {
-  path: string;
+  rightPath: string;
+  leftPath: string;
   coords: { x: number; y: number };
 };
 
@@ -31,79 +32,108 @@ const arc = function arc(
 export const lCurve = function lCurve(
   x: number,
   y: number,
+  width: number,
   height: number,
   radius: number,
   widthDifference: number,
-  interior: boolean,
-  width?: number
+  widthDifferenceToBefore: number,
+  isLast: boolean,
+  interior: boolean
 ): SVGPathResponse {
-  let path: string = "";
+  let rightPath: string = "";
+  let leftPath: string = "";
 
   let destination: { x: number; y: number } = {
-    x: x + (width ?? widthDifference),
+    x: x + (isLast ? width : widthDifference),
     y: y + height,
   };
 
   if (interior) {
-    destination.x = x - (width ?? widthDifference);
+    destination.x = x - (isLast ? width : widthDifference);
     destination.y = y + height;
 
-    path += arc(x - radius, y + radius, radius, false) + " ";
-    path += line(x - radius, y + height - radius) + " ";
-    path += arc(x - 2 * radius, y + height, radius, true) + " ";
-    path += line(destination.x, destination.y);
+    rightPath += arc(x - radius, y + radius, radius, false) + " ";
+    rightPath += line(x - radius, y + height - radius) + " ";
+    rightPath += arc(x - 2 * radius, y + height, radius, true) + " ";
+    rightPath += line(destination.x, destination.y);
+
+    leftPath += arc(x - width - radius, y + height - radius, radius, true);
+    leftPath += line(x - width - radius, y + radius);
+    leftPath += arc(x - width - 2 * radius, y, radius, false);
+    leftPath += line(x - width - widthDifferenceToBefore, y);
   } else {
-    path += line(x - radius, y) + " ";
-    path += arc(x, y + radius, radius, true) + " ";
-    path += line(x, y + height - radius) + " ";
-    path += arc(x + radius, y + height, radius, false);
-    path += line(destination.x, destination.y);
+    rightPath += line(x - radius, y) + " ";
+    rightPath += arc(x, y + radius, radius, true) + " ";
+    rightPath += line(x, y + height - radius) + " ";
+    rightPath += arc(x + radius, y + height, radius, false);
+    rightPath += line(destination.x, destination.y);
+
+    leftPath += arc(x - width, y + height - radius, radius, false);
+    leftPath += line(x - width, y + radius);
+    leftPath += arc(x - width + radius, y, radius, true);
+    leftPath += line(x - width + widthDifferenceToBefore - radius, y);
   }
 
-  return { path, coords: { ...destination } };
+  return { rightPath, leftPath, coords: { ...destination } };
 };
 
 export const hookCurve = function hookCurve(
   x: number,
   y: number,
+  width: number,
   height: number,
   radius: number,
   widthDifference: number,
-  width?: number
+  widthDifferenceToBefore: number,
+  isLast: boolean
 ): SVGPathResponse {
-  let path: string = "";
+  let rightPath: string = "";
+  let leftPath: string = "";
 
   let destination: { x: number; y: number } = {
-    x: x - (width ?? widthDifference) + radius,
+    x: x - (isLast ? width : widthDifference) + radius,
     y: y + height,
   };
-  path += line(x - radius, y) + " ";
-  path += arc(x, y + radius, radius, true) + " ";
-  path += line(x, y + height - radius) + " ";
-  path += arc(x - radius, y + height, radius, true) + " ";
-  path += line(destination.x, destination.y);
+  rightPath += line(x - radius, y) + " ";
+  rightPath += arc(x, y + radius, radius, true) + " ";
+  rightPath += line(x, y + height - radius) + " ";
+  rightPath += arc(x - radius, y + height, radius, true) + " ";
+  rightPath += line(destination.x, destination.y);
 
-  return { path, coords: { ...destination } };
+  leftPath += arc(x - width, y + height - radius, radius, true);
+  leftPath += line(x - width, y + radius);
+  leftPath += arc(x - width + radius, y, radius, true);
+  leftPath += line(x - width + widthDifferenceToBefore - radius, y);
+
+  return { rightPath, leftPath, coords: { ...destination } };
 };
 
 export const cCurve = function cCurve(
   x: number,
   y: number,
+  width: number,
   height: number,
   radius: number,
-  widthDifference: number
+  widthDifference: number,
+  widthDifferenceToBefore: number
 ): SVGPathResponse {
-  let path: string = "";
+  let rightPath: string = "";
+  let leftPath: string = "";
 
   let destination: { x: number; y: number } = {
     x: x + widthDifference - radius,
     y: y + height,
   };
 
-  path += arc(x - radius, y + radius, radius, false) + " ";
-  path += line(x - radius, y + height - radius) + " ";
-  path += arc(x, y + height, radius, false);
-  path += line(destination.x, destination.y);
+  rightPath += arc(x - radius, y + radius, radius, false) + " ";
+  rightPath += line(x - radius, y + height - radius) + " ";
+  rightPath += arc(x, y + height, radius, false);
+  rightPath += line(destination.x, destination.y);
 
-  return { path, coords: { ...destination } };
+  leftPath += arc(x - width - radius, y + height - radius, radius, false);
+  leftPath += line(x - width - radius, y + radius);
+  leftPath += arc(x - width - 2 * radius, y, radius, false);
+  leftPath += line(x - width - widthDifferenceToBefore, y);
+
+  return { rightPath, leftPath, coords: { ...destination } };
 };
