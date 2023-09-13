@@ -1,5 +1,6 @@
 import Batch from "../classes/Batch";
 import {
+  arc,
   cCurve,
   close,
   hookCurve,
@@ -27,7 +28,8 @@ class AdjacentBatchInformation {
 const generateBackgroundPath = function generateBackgroundPath(
   batches: Batch[],
   radius: number,
-  margin: number
+  margin: number,
+  alignment: string
 ) {
   const longestBatchWidth = Math.max(...batches.map((x) => x._width));
   let leftPaths: string[] = [];
@@ -38,15 +40,6 @@ const generateBackgroundPath = function generateBackgroundPath(
   batches.forEach((b, i) => {
     if (isSingle) {
       return;
-    }
-
-    if (i === 0) {
-      position.x = differenceInWidth(b._width, longestBatchWidth) / 2 + radius;
-      rightPaths.push(
-        move(position.x, position.y),
-        line(position.x + b._width - 2 * radius, position.y)
-      );
-      position.x += b._width - radius;
     }
 
     const adjacentBatches: {
@@ -66,6 +59,29 @@ const generateBackgroundPath = function generateBackgroundPath(
       adjacentBatches.before?._isLonger,
       adjacentBatches.after?._isLonger
     );
+    const widthDifferenceDivider = alignment === "center" ? 2 : 1;
+
+    if (i === 0) {
+      if (alignment === "center") {
+        position.x =
+          differenceInWidth(b._width, longestBatchWidth) / 2 + radius;
+        rightPaths.push(
+          move(position.x, position.y),
+          line(position.x + b._width - 2 * radius, position.y)
+        );
+        position.x += b._width - radius;
+      } else if (alignment === "left") {
+        position.x = 0;
+        position.y = 0 + radius;
+        rightPaths.push(
+          move(position.x, position.y),
+          arc(position.x + radius, position.y - radius, radius, true),
+          line(position.x + b._width - 2 * radius, position.y - radius)
+        );
+        position.x += b._width;
+        position.y -= radius;
+      }
+    }
 
     if (
       (adjacentBatches.before?._isLonger &&
@@ -79,8 +95,9 @@ const generateBackgroundPath = function generateBackgroundPath(
         height,
         radius,
         (adjacentBatches.after?._widthDifference ??
-          adjacentBatches.before!._widthDifference) / 2,
-        (adjacentBatches.before?._widthDifference ?? 0) / 2,
+          adjacentBatches.before!._widthDifference) / widthDifferenceDivider,
+        (adjacentBatches.before?._widthDifference ?? 0) /
+          widthDifferenceDivider,
         i === batches.length - 1,
         adjacentBatches.before?._isLonger ?? false
       );
@@ -100,8 +117,9 @@ const generateBackgroundPath = function generateBackgroundPath(
         height,
         radius,
         (adjacentBatches.after?._widthDifference ??
-          adjacentBatches.before!._widthDifference) / 2,
-        (adjacentBatches.before?._widthDifference ?? 0) / 2,
+          adjacentBatches.before!._widthDifference) / widthDifferenceDivider,
+        (adjacentBatches.before?._widthDifference ?? 0) /
+          widthDifferenceDivider,
         i === batches.length - 1
       );
       rightPaths.push(curve.rightPath);
@@ -116,25 +134,37 @@ const generateBackgroundPath = function generateBackgroundPath(
         b._width,
         height,
         radius,
-        adjacentBatches.after._widthDifference / 2,
-        (adjacentBatches.before?._widthDifference ?? 0) / 2
+        adjacentBatches.after._widthDifference / widthDifferenceDivider,
+        (adjacentBatches.before?._widthDifference ?? 0) / widthDifferenceDivider
       );
       rightPaths.push(curve.rightPath);
       leftPaths.push(curve.leftPath);
       position = { ...curve.coords };
     }
+
+    if (alignment === "left" && i === batches.length - 1) {
+      rightPaths.push(
+        arc(position.x - radius, position.y - radius, radius, true)
+      );
+    }
   });
 
-  leftPaths = leftPaths.reverse();
+  if (alignment === "center") {
+    leftPaths = leftPaths.reverse();
+  } else if (alignment === "left") {
+    leftPaths = [];
+  }
   leftPaths.push(close());
   return rightPaths.concat(leftPaths).join(" ");
 };
 
 type BackgroundSVGForTextProps = {
   batches: Batch[];
+  alignment: string;
 };
 const BackgroundSVGForText = function BackgroundSVGForText({
   batches,
+  alignment,
 }: BackgroundSVGForTextProps) {
   const radius = 12;
   const margin = 16;
@@ -154,7 +184,10 @@ const BackgroundSVGForText = function BackgroundSVGForText({
         opacity: "50%",
       }}
     >
-      <path d={generateBackgroundPath(batches, radius, margin)} fill="green" />
+      <path
+        d={generateBackgroundPath(batches, radius, margin, alignment)}
+        fill="green"
+      />
     </svg>
   );
 };

@@ -195,7 +195,7 @@ const FormattedContent = function FormattedContent({
           colorInfo={colorInfo}
         />
 
-        <BackgroundSVGForText batches={batches} />
+        <BackgroundSVGForText batches={batches} alignment={alignment} />
       </Box>
     </Box>
   );
