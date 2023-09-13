@@ -8,6 +8,7 @@ import {
   line,
   move,
 } from "../services/svg-helpers";
+import ColorInformation from "../types/ColorInformation";
 import { differenceInWidth } from "../views/caption-creator/helpers";
 
 class AdjacentBatchInformation {
@@ -161,12 +162,16 @@ const generateBackgroundPath = function generateBackgroundPath(
 type BackgroundSVGForTextProps = {
   batches: Batch[];
   alignment: string;
+  variant: string;
+  colorInfo: ColorInformation;
 };
 const BackgroundSVGForText = function BackgroundSVGForText({
   batches,
   alignment,
+  variant,
+  colorInfo,
 }: BackgroundSVGForTextProps) {
-  const radius = 12;
+  const radius = 8;
   const margin = 16;
 
   return (
@@ -180,14 +185,13 @@ const BackgroundSVGForText = function BackgroundSVGForText({
         left: 0,
         right: 0,
         bottom: 0,
-        zIndex: 2,
-        opacity: "50%",
+        opacity: variant === "opaque-bg" ? "100%" : "50%",
         transform: alignment === "right" ? "scale(-1,1)" : "",
       }}
     >
       <path
         d={generateBackgroundPath(batches, radius, margin, alignment)}
-        fill="green"
+        fill={colorInfo.color}
       />
     </svg>
   );

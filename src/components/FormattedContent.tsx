@@ -117,7 +117,6 @@ const FormattedText = function FormattedText({
                   width: "100%",
                   zIndex: 100 - j,
                   marginTop: i > 0 || j !== 0 ? "-1rem" : "unset",
-                  backgroundColor: "red",
                 }}
               >
                 <FormattedTextAsDiv content={line.label} />
@@ -180,12 +179,7 @@ const FormattedContent = function FormattedContent({
 }: FormattedContentProps) {
   return (
     <Box mt={8} p="2rem 30px">
-      <Box
-        pos="relative"
-        display="inline-block"
-        id={outputContainerId}
-        bg="purple"
-      >
+      <Box pos="relative" display="inline-block" id={outputContainerId}>
         <MeasurementBox containerRef={containerRef} textRef={textRef} />
 
         <FormattedText
@@ -195,7 +189,12 @@ const FormattedContent = function FormattedContent({
           colorInfo={colorInfo}
         />
 
-        <BackgroundSVGForText batches={batches} alignment={alignment} />
+        <BackgroundSVGForText
+          batches={batches}
+          alignment={alignment}
+          variant={variant}
+          colorInfo={colorInfo}
+        />
       </Box>
     </Box>
   );
