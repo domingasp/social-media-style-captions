@@ -70,7 +70,7 @@ const generateBackgroundPath = function generateBackgroundPath(
           line(position.x + b._width - 2 * radius, position.y)
         );
         position.x += b._width - radius;
-      } else if (alignment === "left") {
+      } else {
         position.x = 0;
         position.y = 0 + radius;
         rightPaths.push(
@@ -142,7 +142,7 @@ const generateBackgroundPath = function generateBackgroundPath(
       position = { ...curve.coords };
     }
 
-    if (alignment === "left" && i === batches.length - 1) {
+    if (alignment !== "center" && i === batches.length - 1) {
       rightPaths.push(
         arc(position.x - radius, position.y - radius, radius, true)
       );
@@ -151,7 +151,7 @@ const generateBackgroundPath = function generateBackgroundPath(
 
   if (alignment === "center") {
     leftPaths = leftPaths.reverse();
-  } else if (alignment === "left") {
+  } else {
     leftPaths = [];
   }
   leftPaths.push(close());
@@ -182,6 +182,7 @@ const BackgroundSVGForText = function BackgroundSVGForText({
         bottom: 0,
         zIndex: 2,
         opacity: "50%",
+        transform: alignment === "right" ? "scale(-1,1)" : "",
       }}
     >
       <path
