@@ -32,15 +32,32 @@ export const lCurve = function lCurve(
   x: number,
   y: number,
   height: number,
-  radius: number
+  radius: number,
+  widthDifference: number,
+  interior: boolean
 ): SVGPathResponse {
   let path: string = "";
 
-  let destination: { x: number; y: number } = { x: x + radius, y: y + height };
-  path += line(x - radius, y) + " ";
-  path += arc(x, y + radius, radius, true) + " ";
-  path += line(x, y + height - radius) + " ";
-  path += arc(destination.x, destination.y, radius, false);
+  let destination: { x: number; y: number } = {
+    x: x + widthDifference,
+    y: y + height,
+  };
+
+  if (interior) {
+    destination.x = x - widthDifference;
+    destination.y = y + height;
+
+    path += arc(x - radius, y + radius, radius, false) + " ";
+    path += line(x - radius, y + height - radius) + " ";
+    path += arc(x - 2 * radius, y + height, radius, true) + " ";
+    path += line(destination.x, destination.y);
+  } else {
+    path += line(x - radius, y) + " ";
+    path += arc(x, y + radius, radius, true) + " ";
+    path += line(x, y + height - radius) + " ";
+    path += arc(x + radius, y + height, radius, false);
+    path += line(destination.x, destination.y);
+  }
 
   return { path, coords: { ...destination } };
 };
@@ -48,55 +65,43 @@ export const lCurve = function lCurve(
 export const hookCurve = function hookCurve(
   x: number,
   y: number,
-  widthDifferenceToAdjacent: number,
   height: number,
-  radius: number
+  radius: number,
+  widthDifference: number
 ): SVGPathResponse {
   let path: string = "";
 
   let destination: { x: number; y: number } = {
-    x: x + widthDifferenceToAdjacent - 2 * radius,
+    x: x - widthDifference + radius,
     y: y + height,
   };
-  path += line(x + widthDifferenceToAdjacent - 2 * radius, y) + " ";
-  path +=
-    arc(x + widthDifferenceToAdjacent - radius, y + radius, radius, true) + " ";
-  path +=
-    line(x + widthDifferenceToAdjacent - radius, y + height - radius) + " ";
-  path += arc(
-    x + widthDifferenceToAdjacent - 2 * radius,
-    y + height,
-    radius,
-    true
-  );
+  path += line(x - radius, y) + " ";
+  path += arc(x, y + radius, radius, true) + " ";
+  path += line(x, y + height - radius) + " ";
+  path += arc(x - radius, y + height, radius, true) + " ";
+  path += line(destination.x, destination.y);
 
   return { path, coords: { ...destination } };
 };
 
-export const reverseHookCurve = function reverseHookCurve(
+export const cCurve = function cCurve(
   x: number,
   y: number,
-  widthDifferenceToAdjacent: number,
   height: number,
-  radius: number
+  radius: number,
+  widthDifference: number
 ): SVGPathResponse {
   let path: string = "";
 
   let destination: { x: number; y: number } = {
-    x: x + widthDifferenceToAdjacent - 2 * radius,
+    x: x + widthDifference - radius,
     y: y + height,
   };
-  path += line(x + widthDifferenceToAdjacent - 2 * radius, y) + " ";
-  path +=
-    arc(x + widthDifferenceToAdjacent - radius, y + radius, radius, true) + " ";
-  path +=
-    line(x + widthDifferenceToAdjacent - radius, y + height - radius) + " ";
-  path += arc(
-    x + widthDifferenceToAdjacent - 2 * radius,
-    y + height,
-    radius,
-    true
-  );
+
+  path += arc(x - radius, y + radius, radius, false) + " ";
+  path += line(x - radius, y + height - radius) + " ";
+  path += arc(x, y + height, radius, false);
+  path += line(destination.x, destination.y);
 
   return { path, coords: { ...destination } };
 };

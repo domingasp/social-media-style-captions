@@ -31,10 +31,16 @@ class Batch {
     this._height = this.calculateHeight(this._labels);
   }
 
-  heightIncludingMargin(margin: number, isShorter: boolean) {
+  heightIncludingMargin(
+    margin: number,
+    shorterThanBefore: boolean | undefined,
+    shorterThanAfter: boolean | undefined
+  ) {
     return (
       this._height -
-      margin * (isShorter ? this._labels.length : this._labels.length - 1)
+      margin *
+        (shorterThanBefore ? this._labels.length : this._labels.length - 1) -
+      (shorterThanAfter ? margin : 0)
     );
   }
 

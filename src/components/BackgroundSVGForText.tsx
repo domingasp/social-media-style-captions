@@ -1,5 +1,12 @@
 import Batch from "../classes/Batch";
-import { close, hookCurve, lCurve, move } from "../services/svg-helpers";
+import {
+  cCurve,
+  close,
+  hookCurve,
+  lCurve,
+  line,
+  move,
+} from "../services/svg-helpers";
 import { differenceInWidth } from "../views/caption-creator/helpers";
 
 class AdjacentBatchInformation {
@@ -28,6 +35,7 @@ const generateBackgroundPath = function generateBackgroundPath(
 
   const isSingle = batches.length === 1;
   let position: { x: number; y: number } = { x: 0, y: 0 };
+  console.log("start");
   batches.forEach((b, i) => {
     if (isSingle) {
       return;
@@ -35,7 +43,11 @@ const generateBackgroundPath = function generateBackgroundPath(
 
     if (i === 0) {
       position.x = differenceInWidth(b._width, longestBatchWidth) / 2 + radius;
-      rightPaths.push(move(position.x, position.y));
+      rightPaths.push(
+        move(position.x, position.y),
+        line(position.x + b._width - 2 * radius, position.y)
+      );
+      position.x += b._width - radius;
     }
 
     const adjacentBatches: {
@@ -52,31 +64,69 @@ const generateBackgroundPath = function generateBackgroundPath(
 
     const height = b.heightIncludingMargin(
       margin,
-      adjacentBatches.after?._isLonger ?? adjacentBatches.before!._isLonger
+      adjacentBatches.before?._isLonger,
+      adjacentBatches.after?._isLonger
     );
 
-    if (adjacentBatches.after?._isLonger || adjacentBatches.before?._isLonger) {
+    if (
+      (adjacentBatches.before?._isLonger &&
+        !adjacentBatches.after?._isLonger) ||
+      (!adjacentBatches.before?._isLonger && adjacentBatches.after?._isLonger)
+    ) {
       const curve = lCurve(
-        position.x + b._width - radius,
+        position.x,
         position.y,
         height,
-        radius
+        radius,
+        (adjacentBatches.after?._widthDifference ??
+          adjacentBatches.before!._widthDifference) / 2,
+        adjacentBatches.before?._isLonger ?? false
       );
       rightPaths.push(curve.path);
-
       position = { ...curve.coords };
-    } else {
+
+      console.log(
+        "lcurve",
+        b._labels.map((x) => x.label)
+      );
+    }
+
+    if (
+      !adjacentBatches.before?._isLonger &&
+      !adjacentBatches.after?._isLonger
+    ) {
       const curve = hookCurve(
         position.x,
         position.y,
-        (adjacentBatches.after?._widthDifference ??
-          adjacentBatches.before!._widthDifference) / 2,
         height,
-        radius
+        radius,
+        (adjacentBatches.after?._widthDifference ??
+          adjacentBatches.before!._widthDifference) / 2
       );
       rightPaths.push(curve.path);
-
       position = { ...curve.coords };
+
+      console.log(
+        "hookcurve",
+        b._labels.map((x) => x.label)
+      );
+    }
+
+    if (adjacentBatches.before?._isLonger && adjacentBatches.after?._isLonger) {
+      const curve = cCurve(
+        position.x,
+        position.y,
+        height,
+        radius,
+        adjacentBatches.after._widthDifference / 2
+      );
+      rightPaths.push(curve.path);
+      position = { ...curve.coords };
+
+      console.log(
+        "ccurve",
+        b._labels.map((x) => x.label)
+      );
     }
   });
 
