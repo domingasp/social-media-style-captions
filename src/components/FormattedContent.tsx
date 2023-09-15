@@ -1,6 +1,6 @@
-import { Box, Stack, StackProps, Sx, Text } from "@mantine/core";
+import { Box, Flex, Stack, StackProps, Sx, Text } from "@mantine/core";
 import SVGText from "./SVGText";
-import React, { forwardRef } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import ColorInformation from "../types/ColorInformation";
 import Batch from "../classes/Batch";
 import BackgroundSVGForText from "./BackgroundSVGForText";
@@ -177,25 +177,78 @@ const FormattedContent = function FormattedContent({
   colorInfo,
   outputContainerId = "output",
 }: FormattedContentProps) {
+  const [rebatched, setRebatched] = useState<(undefined | Batch[])[]>([]);
+
+  useEffect(() => {
+    const arr: (undefined | Batch[])[] = [];
+
+    let currCollection: Batch[] = [];
+    batches.forEach((x, i) => {
+      if (x.isEmpty) {
+        if (currCollection.length > 0) arr.push(currCollection);
+        arr.push(undefined);
+        currCollection = [];
+      } else {
+        currCollection.push(x);
+      }
+
+      if (i === batches.length - 1 && currCollection.length > 0) {
+        arr.push(currCollection);
+      }
+    });
+
+    setRebatched(arr);
+  }, [batches]);
+
   return (
     <Box mt={8} p="2rem 30px">
-      <Box pos="relative" display="inline-block" id={outputContainerId}>
-        <MeasurementBox containerRef={containerRef} textRef={textRef} />
+      <MeasurementBox containerRef={containerRef} textRef={textRef} />
 
-        <FormattedText
-          batches={batches}
-          alignment={alignment}
-          variant={variant}
-          colorInfo={colorInfo}
-        />
+      <Flex
+        id={outputContainerId}
+        direction="column"
+        align={
+          alignment === "left"
+            ? "flex-start"
+            : alignment === "right"
+            ? "flex-end"
+            : alignment
+        }
+        sx={{
+          display: "inline-flex",
+        }}
+      >
+        {rebatched.map((b) => {
+          if (b === undefined) {
+            return (
+              <FormattedText
+                batches={[new Batch([])]}
+                alignment={alignment}
+                variant={variant}
+                colorInfo={colorInfo}
+              />
+            );
+          } else {
+            return (
+              <Box pos="relative">
+                <FormattedText
+                  batches={b}
+                  alignment={alignment}
+                  variant={variant}
+                  colorInfo={colorInfo}
+                />
 
-        <BackgroundSVGForText
-          batches={batches}
-          alignment={alignment}
-          variant={variant}
-          colorInfo={colorInfo}
-        />
-      </Box>
+                <BackgroundSVGForText
+                  batches={b}
+                  alignment={alignment}
+                  variant={variant}
+                  colorInfo={colorInfo}
+                />
+              </Box>
+            );
+          }
+        })}
+      </Flex>
     </Box>
   );
 };
