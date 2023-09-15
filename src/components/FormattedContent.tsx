@@ -238,12 +238,14 @@ const FormattedContent = function FormattedContent({
                   colorInfo={colorInfo}
                 />
 
-                <BackgroundSVGForText
-                  batches={b}
-                  alignment={alignment}
-                  variant={variant}
-                  colorInfo={colorInfo}
-                />
+                {variant.includes("bg") && (
+                  <BackgroundSVGForText
+                    batches={b}
+                    alignment={alignment}
+                    variant={variant}
+                    colorInfo={colorInfo}
+                  />
+                )}
               </Box>
             );
           }
