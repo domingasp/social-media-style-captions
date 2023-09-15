@@ -40,6 +40,25 @@ const generateBackgroundPath = function generateBackgroundPath(
   let position: { x: number; y: number } = { x: 0, y: 0 };
   batches.forEach((b, i) => {
     if (isSingle) {
+      rightPaths.push(
+        move(position.x, position.y),
+        line(position.x + b._width - 2 * radius, position.y)
+      );
+      position.x += b._width - radius;
+
+      const curve = hookCurve(
+        position.x + radius,
+        position.y,
+        b._width,
+        b.heightIncludingMargin(margin, false, false),
+        radius,
+        0,
+        0,
+        true
+      );
+      console.log(curve);
+      rightPaths.push(curve.rightPath);
+      leftPaths.push(curve.leftPath);
       return;
     }
 
