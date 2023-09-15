@@ -24,7 +24,7 @@ import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import Batch from "../../classes/Batch";
 
 function CaptionCreator() {
-  const [content, setContent] = useState("Captions");
+  const [content, setContent] = useState("Captions 🫠");
   const [batches, setBatches] = useState<Batch[]>([]);
 
   const [customImageFile, setCustomImageFile] = useState<File | null>(null);
