@@ -170,7 +170,7 @@ const generateBackgroundPath = function generateBackgroundPath(
 
   if (alignment === "center") {
     leftPaths = leftPaths.reverse();
-  } else {
+  } else if (!isSingle) {
     leftPaths = [];
   }
   leftPaths.push(close());
