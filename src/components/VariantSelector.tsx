@@ -14,7 +14,7 @@ const OptionText = function OptionText() {
         position: "absolute",
         width: "100%",
         height: "100%",
-        top: 2,
+        top: 0,
         left: 0.25,
         lineHeight: "1rem",
       }}
@@ -71,8 +71,9 @@ const VariantSelector = function VariantSelector({
                     strokeColor={checked ? checkedColor : "black"}
                     svgParentStyle={{
                       position: "absolute",
-                      top: 1.44,
+                      top: 0,
                       left: 0.25,
+                      height: "20px"
                     }}
                     style={{
                       fontSize: "1.2rem",
