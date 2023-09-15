@@ -90,7 +90,7 @@ function CaptionCreator() {
   return (
     <Group p="md" align="flex-start" w="100%">
       <Stack sx={{ flexGrow: 1 }} mr="md">
-        <Title>TikTok Style Text Generator</Title>
+        <Title>Social Media Style Caption Generator</Title>
 
         <Textarea
           label="Your Content"
