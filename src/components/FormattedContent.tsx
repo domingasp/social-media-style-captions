@@ -57,6 +57,7 @@ const FormattedTextAsDiv = forwardRef<HTMLDivElement, FormattedTextAsDivProps>(
         sx={{
           lineHeight: "1.5rem",
           visibility: "hidden",
+          whiteSpace: "pre"
         }}
         ref={ref}
       >
@@ -218,10 +219,11 @@ const FormattedContent = function FormattedContent({
           display: "inline-flex",
         }}
       >
-        {rebatched.map((b) => {
+        {rebatched.map((b, i) => {
           if (b === undefined) {
             return (
               <FormattedText
+              key={i}
                 batches={[new Batch([])]}
                 alignment={alignment}
                 variant={variant}
@@ -230,7 +232,7 @@ const FormattedContent = function FormattedContent({
             );
           } else {
             return (
-              <Box pos="relative">
+              <Box pos="relative" key={i}>
                 <FormattedText
                   batches={b}
                   alignment={alignment}

@@ -76,9 +76,11 @@ export const batchLines = function batchLines(
 
   const labelDimensions: LabelDimensions[] = [];
   lines.forEach((line) => {
-    let toAppend = [line];
+    let toAppend = [];
     if (line.length > lineLengthLimit) {
       toAppend.push(...splitIntoSubset(line, lineLengthLimit));
+    } else {
+      toAppend.push(line);
     }
 
     labelDimensions.push(

@@ -66,6 +66,7 @@ const SVGText = function SVGText({
           textAnchor: getTextAnchorFromAlignment(),
           alignmentBaseline: "middle",
           transform: getTranslateFromAlignment(),
+          whiteSpace: "pre",
           ...style,
         }}
       >
