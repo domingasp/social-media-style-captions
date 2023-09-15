@@ -56,7 +56,6 @@ const generateBackgroundPath = function generateBackgroundPath(
         0,
         true
       );
-      console.log(curve);
       rightPaths.push(curve.rightPath);
       leftPaths.push(curve.leftPath);
       return;
