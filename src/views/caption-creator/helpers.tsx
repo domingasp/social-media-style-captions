@@ -130,8 +130,6 @@ export const batchLines = function batchLines(
     }
   }
 
-  console.log(batched);
-
   return batched;
 };
 

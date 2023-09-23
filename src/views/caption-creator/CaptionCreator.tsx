@@ -25,7 +25,7 @@ import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import Batch from "../../classes/Batch";
 
 function CaptionCreator() {
-  const [content, setContent] = useState("Captions 🫠");
+  const [content, setContent] = useState("");
   const [batches, setBatches] = useState<Batch[]>([]);
 
   const [customImageFile, setCustomImageFile] = useState<File | null>(null);
@@ -50,14 +50,6 @@ function CaptionCreator() {
     const contentSplit = content.split("\n");
 
     if (containerRef.current !== null && textRef.current !== null) {
-      console.log(
-        batchLines(
-          contentSplit,
-          containerRef.current!,
-          textRef.current!,
-          lineLimit !== "" ? lineLimit : 1
-        )
-      );
       setBatches(
         batchLines(
           contentSplit,
@@ -124,6 +116,7 @@ function CaptionCreator() {
         <Title>Social Media Style Caption Generator</Title>
 
         <Textarea
+          id="content-input"
           label="Your Content"
           miw={500}
           autosize
