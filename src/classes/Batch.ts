@@ -1,11 +1,13 @@
 import { LabelDimensions } from "../types/LabelWidth";
 
 class Batch {
+  _id: number;
   _width: number;
   _height: number;
   _labels: LabelDimensions[];
 
-  constructor(labels: LabelDimensions[]) {
+  constructor(id: number, labels: LabelDimensions[]) {
+    this._id = id;
     this._labels = labels;
     this._width = Math.max(...labels.map((x) => x.width));
     this._height = this.calculateHeight(labels);

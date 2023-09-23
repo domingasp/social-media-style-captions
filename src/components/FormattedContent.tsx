@@ -4,6 +4,7 @@ import React, { forwardRef, useEffect, useState } from "react";
 import ColorInformation from "../types/ColorInformation";
 import Batch from "../classes/Batch";
 import BackgroundSVGForText from "./BackgroundSVGForText";
+import { batchIntoContentAndEmpty } from "../views/caption-creator/helpers";
 
 const alignmentToAlign = function alignmentToAlign(alignment: string) {
   if (alignment === "left") return "flex-start";
@@ -57,7 +58,7 @@ const FormattedTextAsDiv = forwardRef<HTMLDivElement, FormattedTextAsDivProps>(
         sx={{
           lineHeight: "1.5rem",
           visibility: "hidden",
-          whiteSpace: "pre"
+          whiteSpace: "pre",
         }}
         ref={ref}
       >
@@ -181,24 +182,7 @@ const FormattedContent = function FormattedContent({
   const [rebatched, setRebatched] = useState<(undefined | Batch[])[]>([]);
 
   useEffect(() => {
-    const arr: (undefined | Batch[])[] = [];
-
-    let currCollection: Batch[] = [];
-    batches.forEach((x, i) => {
-      if (x.isEmpty) {
-        if (currCollection.length > 0) arr.push(currCollection);
-        arr.push(undefined);
-        currCollection = [];
-      } else {
-        currCollection.push(x);
-      }
-
-      if (i === batches.length - 1 && currCollection.length > 0) {
-        arr.push(currCollection);
-      }
-    });
-
-    setRebatched(arr);
+    setRebatched(batchIntoContentAndEmpty(batches));
   }, [batches]);
 
   return (
@@ -223,8 +207,8 @@ const FormattedContent = function FormattedContent({
           if (b === undefined) {
             return (
               <FormattedText
-              key={i}
-                batches={[new Batch([])]}
+                key={i}
+                batches={[new Batch(-1, [])]}
                 alignment={alignment}
                 variant={variant}
                 colorInfo={colorInfo}
@@ -232,7 +216,11 @@ const FormattedContent = function FormattedContent({
             );
           } else {
             return (
-              <Box pos="relative" key={i}>
+              <Box
+                pos="relative"
+                key={i}
+                id={"formatted-" + b.at(0)!._id.toString()}
+              >
                 <FormattedText
                   batches={b}
                   alignment={alignment}

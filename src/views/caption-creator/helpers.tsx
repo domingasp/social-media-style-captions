@@ -93,14 +93,16 @@ export const batchLines = function batchLines(
 
   const batched: Batch[] = [];
   let batch = 0;
+  let id = 1;
   for (let i = 0; i < labelDimensions.length; i += 1) {
     const curr = labelDimensions[i];
 
     if (curr.label.length === 0) {
       batch += 2;
-      batched.push(new Batch([]));
+      batched.push(new Batch(-1, []));
+      id += 1;
     } else if (i === 0 || !batched[batch]) {
-      batched.push(new Batch([curr]));
+      batched.push(new Batch(id, [curr]));
     } else {
       const longestInFuture = getLongestTextAfterCurrent(
         labelDimensions,
@@ -123,12 +125,37 @@ export const batchLines = function batchLines(
         }
       } else {
         batch += 1;
-        batched.push(new Batch([curr]));
+        batched.push(new Batch(id, [curr]));
       }
     }
   }
 
+  console.log(batched);
+
   return batched;
+};
+
+export const batchIntoContentAndEmpty = function batchIntoContentAndEmpty(
+  batches: Batch[]
+) {
+  const arr: (undefined | Batch[])[] = [];
+
+  let currCollection: Batch[] = [];
+  batches.forEach((x, i) => {
+    if (x.isEmpty) {
+      if (currCollection.length > 0) arr.push(currCollection);
+      arr.push(undefined);
+      currCollection = [];
+    } else {
+      currCollection.push(x);
+    }
+
+    if (i === batches.length - 1 && currCollection.length > 0) {
+      arr.push(currCollection);
+    }
+  });
+
+  return arr;
 };
 
 export const longestStringInArray = function longestStringInArray(

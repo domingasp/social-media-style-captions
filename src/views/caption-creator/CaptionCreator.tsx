@@ -5,6 +5,7 @@ import {
   Card,
   Group,
   NumberInput,
+  Radio,
   Stack,
   Text,
   Textarea,
@@ -12,7 +13,7 @@ import {
 } from "@mantine/core";
 import { toPng, toSvg } from "html-to-image";
 import { createRef, useEffect, useState } from "react";
-import { batchLines } from "./helpers";
+import { batchIntoContentAndEmpty, batchLines } from "./helpers";
 import FileSaver from "file-saver";
 import { IconPhoto, IconPhotoCode, IconX } from "@tabler/icons-react";
 import FormattedText from "../../components/FormattedContent";
@@ -40,6 +41,8 @@ function CaptionCreator() {
     outlineColor: "#000000",
   });
 
+  const [saveTypeValue, setSaveTypeValue] = useState("single");
+
   const containerRef = createRef<HTMLDivElement>();
   const textRef = createRef<HTMLDivElement>();
 
@@ -47,6 +50,14 @@ function CaptionCreator() {
     const contentSplit = content.split("\n");
 
     if (containerRef.current !== null && textRef.current !== null) {
+      console.log(
+        batchLines(
+          contentSplit,
+          containerRef.current!,
+          textRef.current!,
+          lineLimit !== "" ? lineLimit : 1
+        )
+      );
       setBatches(
         batchLines(
           contentSplit,
@@ -77,14 +88,34 @@ function CaptionCreator() {
   }, [customImageFile]);
 
   const saveToFile = async function saveToFile(type: "png" | "svg") {
-    const node = document.getElementById("output");
+    if (saveTypeValue === "single") {
+      const node = document.getElementById("output");
 
-    const dataUrl = type === "png" ? await toPng(node!) : await toSvg(node!);
-    const fileName = batches
-      .map((x) => x._labels.map((y) => y.label))
-      .flat(1)
-      .join("-");
-    FileSaver.saveAs(dataUrl, fileName);
+      const dataUrl = type === "png" ? await toPng(node!) : await toSvg(node!);
+      const fileName = batches
+        .map((x) => x._labels.map((y) => y.label))
+        .flat(1)
+        .join("-");
+      FileSaver.saveAs(dataUrl, fileName);
+    } else {
+      const originalContent = content;
+      const rebatched = batchIntoContentAndEmpty(batches).filter(
+        (x) => x !== undefined
+      ) as Batch[][];
+
+      rebatched.forEach(async (batch) => {
+        const node = document.getElementById(
+          "formatted-" + batch.at(0)!._id.toString()
+        );
+        const dataUrl =
+          type === "png" ? await toPng(node!) : await toSvg(node!);
+        const fileName = batch
+          .map((x) => x._labels.map((y) => y.label))
+          .flat(1)
+          .join("-");
+        FileSaver.saveAs(dataUrl, fileName);
+      });
+    }
   };
 
   return (
@@ -146,6 +177,18 @@ function CaptionCreator() {
 
           <Group>
             <Text>Save:</Text>
+
+            <Radio.Group
+              value={saveTypeValue}
+              onChange={setSaveTypeValue}
+              size="xs"
+            >
+              <Stack spacing={2}>
+                <Radio value="single" label="Single" />
+                <Radio value="multiple" label="Multiple" />
+              </Stack>
+            </Radio.Group>
+
             <Button.Group>
               <Button
                 variant="default"
