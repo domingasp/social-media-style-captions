@@ -90,7 +90,6 @@ function CaptionCreator() {
         .join("-");
       FileSaver.saveAs(dataUrl, fileName);
     } else {
-      const originalContent = content;
       const rebatched = batchIntoContentAndEmpty(batches).filter(
         (x) => x !== undefined
       ) as Batch[][];
@@ -105,7 +104,9 @@ function CaptionCreator() {
           .map((x) => x._labels.map((y) => y.label))
           .flat(1)
           .join("-");
-        FileSaver.saveAs(dataUrl, fileName);
+
+        const { _id } = batch.at(0)!;
+        FileSaver.saveAs(dataUrl, `${_id}-` + fileName);
       });
     }
   };
@@ -187,6 +188,7 @@ function CaptionCreator() {
                 variant="default"
                 leftIcon={<IconPhoto size="1.25rem" />}
                 onClick={() => saveToFile("png")}
+                disabled={content.length === 0}
               >
                 PNG
               </Button>
@@ -194,6 +196,7 @@ function CaptionCreator() {
                 variant="default"
                 leftIcon={<IconPhotoCode size="1.25rem" />}
                 onClick={() => saveToFile("svg")}
+                disabled={content.length === 0}
               >
                 SVG
               </Button>
